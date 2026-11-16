@@ -1,0 +1,19 @@
+# Targeted weekday-seasonality test (Reviewer 1, point 1B, second round). Design fixed BEFORE running (24 Oct 2026)
+
+## What the first test (S2) showed, stated precisely
+S2 used one weekday profile (Mon..Sun = -.4, -.4, -.2, 0, .8, 1.0, -.8, sums to zero), strengths 0.3 and 0.6, four spend alignments (neutral, Thursday x3, Friday-Saturday x3, Monday-Tuesday x3), a weekly KPI, truth always daily, 100 reps, 360 cells per comparison. The weekday pattern entered (i) the baseline and (ii) in the "mult" form also multiplied the daily media response. Result: the paper's daily-transform arm (weekly KPI) beat the weekly arm in 297 of 360 cells; with the baseline-only ("add") form its error did not change with strength; with the multiplicative form it rose by about 3-4 points at strength 0.6 (14.3 to 18.0 in the neutral-aligned core). It does NOT show that weekday seasonality is irrelevant in general: it did not test stronger strengths, weekday-only or weekend-heavy spend, a different profile, or an estimator that models the weekday response.
+
+## Analytic argument (goes into the paper)
+Let p_d be a weekday profile with sum p_d = 0 over d = 1..7, strength s, baseline b_w (constant within a week), daily response r_d.
+1. Baseline: sum_d (b_w/7)(1 + s p_d) = b_w. A weekday pattern in the baseline cancels exactly in any weekly total. (If the baseline also trends within the week by g per day, the leftover is s g sum_d p_d (d - 4), about 0.19 s KPI units for the S2 profile and the paper's trend, below 1% of the baseline standard deviation.)
+2. Media response multiplied by the weekday profile: sum_d r_d (1 + s p_d) = sum_d r_d + s sum_d p_d r_d. The second term is 7 s Cov_d(p, r) within the week. It is zero in expectation only if daily response is uncorrelated with the profile, i.e. spend is not aligned with the weekday pattern. When spend is aligned (peak days heavy) it is systematic and positive; when anti-aligned, negative.
+3. So weekday seasonality is not an aggregation effect: it cancels in the baseline and, in the response, creates a misspecification that hits the weekly arm and the daily-transform arm alike (both lack the weekday term). The only place weekday seasonality is first-order is a DAILY-KPI model without weekday dummies (S2 shows 25-119% error).
+4. Because the weekly KPI is linear in b and b s, a weekday-aware daily-transform arm is a two-regressor weekly regression: KPI_w = base + b sum_d r_d + (b s) sum_d p_d r_d. The weekly-transform arm has no equivalent, because it never sees the daily response.
+
+## Targeted simulation S2b
+Truth: DAILY response, multiplied by (1 + s p_d); baseline also weekday-modulated; weekly KPI observed (paper design); 156 weeks; R2 0.85.
+Factors: strength s in {0.3, 0.6, 0.9}; profile A (S2 profile) and profile B (retail-like weekend spike: weekdays -0.6, Saturday and Sunday +1.5); alignment in {neutral, weekday-only spend (Sat, Sun = 0), weekend-heavy (Sat, Sun x3), peak (Fri, Sat x3), anti-peak (Mon, Tue x3 under profile A; Mon-Wed x3 under profile B)}; delta {0.15, 0.50, 0.85}; shape {1.0, 2.2}; depth medium; pattern {bursty, smooth, real}; 100 reps. 3 x 2 x 5 x 3 x 2 x 3 = 540 cells.
+Control cell: s = 0 (no weekday effect), 100 reps per delta x shape x pattern.
+Arms: weekly, dailyT (paper), dailyT_dow (two-regressor weekday-aware daily transform, profile taken as known), oracle (true response incl. weekday term).
+Metrics: contribution bias % (mean |bias|, paired differences, 2-SE rule), per-cell verdicts, and the size of the extra term s sum p_d r_d as a share of weekly media signal (mean absolute share).
+Expectations (reported either way): D1 dailyT beats weekly in most cells, and its margin shrinks as s and alignment grow. D2 dailyT_dow removes most of the weekday penalty. D3 weekday-only spend with profile A is nearly neutral because the leftover term is small and constant-signed. D4 the weekly-vs-daily gap is not reversed by weekday seasonality alone.

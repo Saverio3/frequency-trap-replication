@@ -1,0 +1,58 @@
+runs: 80  main: 80  repeats: 0  iterations x trials: [(2000, 5)]
+
+================ selection rule: errscore (PRIMARY) ================
+mean |total bias| % by arm and market type (n markets in brackets):
+             mean             count      
+arm             A     B     C     A  B  C
+type                                     
+correlated   34.2  39.8  43.2     4  4  2
+independent  49.1  53.2  57.2     8  8  4
+mixed        40.4  55.7  25.1     4  4  2
+overall mean |total bias|: {'A': 43.2, 'B': 50.5, 'C': 45.7}  mean signed bias: {'A': -43.2, 'B': -50.5, 'C': -45.7}  mean |channel bias|: {'A': 55.1, 'B': 52.7, 'C': 42.5}
+PRIMARY paired A minus B (positive = B, daily transform, better): {'n': 16, 'diff': np.float64(-7.26), 'se': np.float64(4.59), 'b_better': 5}
+    independent {'n': 8, 'diff': np.float64(-4.1), 'se': np.float64(6.34), 'b_better': 3}
+    correlated {'n': 4, 'diff': np.float64(-5.54), 'se': np.float64(7.42), 'b_better': 1}
+    mixed {'n': 4, 'diff': np.float64(-15.3), 'se': np.float64(12.25), 'b_better': 1}
+SECONDARY paired A minus C (positive = daily Robyn better): {'n': 8, 'diff': np.float64(-22.82), 'se': np.float64(7.31), 'b_better': 2}
+   paired B minus C: {'n': 8, 'diff': np.float64(-11.99), 'se': np.float64(8.47), 'b_better': 3}
+paired A minus B on mean |channel bias|: n=16 diff 2.39 se 3.40
+
+================ selection rule: nrmse (secondary) ================
+mean |total bias| % by arm and market type (n markets in brackets):
+             mean             count      
+arm             A     B     C     A  B  C
+type                                     
+correlated   37.4  37.1  39.8     4  4  2
+independent  41.1  49.2  35.2     8  8  4
+mixed        45.3  52.4  46.2     4  4  2
+overall mean |total bias|: {'A': 41.3, 'B': 47.0, 'C': 39.1}  mean signed bias: {'A': -41.3, 'B': -47.0, 'C': -39.1}  mean |channel bias|: {'A': 48.7, 'B': 52.6, 'C': 37.6}
+PRIMARY paired A minus B (positive = B, daily transform, better): {'n': 16, 'diff': np.float64(-5.71), 'se': np.float64(2.71), 'b_better': 1}
+    independent {'n': 8, 'diff': np.float64(-8.07), 'se': np.float64(4.06), 'b_better': 0}
+    correlated {'n': 4, 'diff': np.float64(0.37), 'se': np.float64(6.84), 'b_better': 1}
+    mixed {'n': 4, 'diff': np.float64(-7.08), 'se': np.float64(2.6), 'b_better': 0}
+SECONDARY paired A minus C (positive = daily Robyn better): {'n': 8, 'diff': np.float64(-9.69), 'se': np.float64(6.75), 'b_better': 2}
+   paired B minus C: {'n': 8, 'diff': np.float64(0.92), 'se': np.float64(5.7), 'b_better': 4}
+paired A minus B on mean |channel bias|: n=16 diff -3.88 se 3.93
+
+Per-market table (errscore rule): bias % of total contribution
+arm                    A     B     C
+market type                         
+0      independent  -9.7 -25.3 -45.3
+1      independent -30.6 -64.0 -55.7
+2      correlated  -19.6  -4.0 -52.7
+3      mixed       -16.5 -21.8 -16.3
+4      independent -87.8 -63.8 -73.6
+5      independent  -4.6 -11.2 -54.3
+6      correlated  -12.7 -27.7 -33.7
+7      mixed        -1.5 -51.7 -34.0
+8      independent -65.4 -53.2   NaN
+9      independent -78.0 -72.7   NaN
+10     correlated  -46.1 -62.9   NaN
+11     mixed       -87.3 -80.8   NaN
+12     independent -50.9 -65.2   NaN
+13     independent -66.1 -70.4   NaN
+14     correlated  -58.6 -64.5   NaN
+15     mixed       -56.2 -68.4   NaN
+
+convergence messages (first run per market/arm, errscore): share containing 'NOT converged': 0.75
+secs per run median: 957.0  n_pareto1 median: 17.0

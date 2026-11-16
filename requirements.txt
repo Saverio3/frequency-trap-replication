@@ -1,0 +1,9 @@
+# Python 3.10+ (tested on 3.13). Install: pip install -r requirements.txt
+numpy
+scipy
+pandas
+scikit-learn
+joblib
+matplotlib
+nevergrad        # only for s3_robynlike.py and rb_multi.py (Robyn-style search emulation)
+requests         # only for original_paper/download_datasets.py

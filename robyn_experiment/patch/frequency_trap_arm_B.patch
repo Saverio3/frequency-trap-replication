@@ -1,0 +1,67 @@
+--- a/R/R/transformation.R
++++ b/R/R/transformation.R
+@@ -377,6 +377,11 @@
+                                 dt_mod,
+                                 adstock,
+                                 dt_hyppar, ...) {
++  ## ---- FREQUENCY-TRAP PATCH (Arm B): only active when ROBYN_DAILY_SPEND_FILE is set; otherwise Meta's code runs unchanged ----
++  daily_file <- Sys.getenv("ROBYN_DAILY_SPEND_FILE", "")
++  if (nzchar(daily_file)) {
++    return(run_transformations_daily_then_weekly(all_media, window_start_loc, window_end_loc, dt_mod, adstock, dt_hyppar, daily_file))
++  }
+   dt_modAdstocked <- select(dt_mod, -.data$ds)
+   window_loc <- window_start_loc:window_end_loc
+   adstocked_collect <- list()
+@@ -458,3 +463,52 @@
+     inflations = inflation_collect
+   ))
+ }
++
++
++#### FREQUENCY-TRAP PATCH ####
++## Arm B: adstock and Hill saturation are applied to DAILY media, then summed to the weekly rows of the (weekly) model.
++## Everything else in Robyn (weekly KPI, Prophet, ridge, validation split, objectives, search, Pareto) is untouched.
++## Saturation uses Robyn's own saturation_hill() on the daily adstocked series of the rolling window (inflexion = gamma * max of that series).
++## ROBYN_DAILY_BLOCK = 7 for real use; 1 only for the equivalence test (daily file = weekly data, must reproduce standard Robyn exactly).
++.daily_cache <- new.env()
++run_transformations_daily_then_weekly <- function(all_media, window_start_loc, window_end_loc, dt_mod, adstock, dt_hyppar, daily_file) {
++  B <- as.integer(Sys.getenv("ROBYN_DAILY_BLOCK", "7"))
++  if (is.null(.daily_cache[[daily_file]])) .daily_cache[[daily_file]] <- read.csv(daily_file)
++  dd <- .daily_cache[[daily_file]]
++  stopifnot(nrow(dd) == B * nrow(dt_mod))
++  dt_modAdstocked <- select(dt_mod, -.data$ds)
++  window_loc <- window_start_loc:window_end_loc
++  day_loc <- ((window_start_loc - 1) * B + 1):(window_end_loc * B)
++  blocksum <- function(x) as.numeric(colSums(matrix(x, nrow = B)))
++  adstocked_collect <- list(); saturated_total_collect <- list(); saturated_immediate_collect <- list()
++  saturated_carryover_collect <- list(); inflexion_collect <- list(); inflation_collect <- list()
++  for (v in seq_along(all_media)) {
++    m <- dd[[all_media[v]]]
++    stopifnot(!is.null(m))
++    theta <- dt_hyppar[paste0(all_media[v], "_thetas")][[1]][[1]]
++    x_list <- transform_adstock(m, adstock, theta = theta, shape = NULL, scale = NULL)
++    input_total <- x_list$x_decayed
++    input_immediate <- m
++    input_carryover <- input_total - input_immediate
++    adstocked_collect[[v]] <- blocksum(input_total)
++    alpha <- dt_hyppar[paste0(all_media[v], "_alphas")][[1]][[1]]
++    gamma <- dt_hyppar[paste0(all_media[v], "_gammas")][[1]][[1]]
++    sat_temp_total <- saturation_hill(x = input_total[day_loc], alpha = alpha, gamma = gamma)
++    sat_temp_caov <- saturation_hill(x = input_total[day_loc], alpha = alpha, gamma = gamma, x_marginal = input_carryover[day_loc])
++    saturated_total_collect[[v]] <- blocksum(sat_temp_total[["x_saturated"]])
++    saturated_carryover_collect[[v]] <- blocksum(sat_temp_caov[["x_saturated"]])
++    saturated_immediate_collect[[v]] <- saturated_total_collect[[v]] - saturated_carryover_collect[[v]]
++    inflexion_collect[[v]] <- sat_temp_total[["inflexion"]]
++    inflation_collect[[v]] <- x_list$inflation_total
++  }
++  names(adstocked_collect) <- names(saturated_total_collect) <- names(saturated_immediate_collect) <-
++    names(saturated_carryover_collect) <- all_media
++  dt_modAdstocked <- dt_modAdstocked %>% select(-all_of(all_media)) %>% bind_cols(adstocked_collect)
++  dt_modSaturated <- dt_modAdstocked[window_loc, ] %>% select(-all_of(all_media)) %>% bind_cols(saturated_total_collect)
++  dt_saturatedImmediate <- bind_cols(saturated_immediate_collect); dt_saturatedImmediate[is.na(dt_saturatedImmediate)] <- 0
++  dt_saturatedCarryover <- bind_cols(saturated_carryover_collect); dt_saturatedCarryover[is.na(dt_saturatedCarryover)] <- 0
++  inflexion_collect <- unlist(inflexion_collect); inflation_collect <- unlist(inflation_collect)
++  names(inflexion_collect) <- paste0(all_media, "_inflexion"); names(inflation_collect) <- paste0(all_media, "_inflation")
++  list(dt_modSaturated = dt_modSaturated, dt_saturatedImmediate = dt_saturatedImmediate, dt_saturatedCarryover = dt_saturatedCarryover,
++       inflexions = inflexion_collect, inflations = inflation_collect)
++}

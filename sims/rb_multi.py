@@ -42,7 +42,7 @@ class Engine:
         Zt = Zs[tr]
         # lambda as in Robyn: lambda_max = max|X_s' y| / (0.001 n), sequence ratio 1e-4, then x 0.1; linear map by lambda_hp
         lmax = np.max(np.abs(Zt.T@yc))/(0.001*n)*0.1; lmin = lmax*1e-4
-        lam = lmin + (lmax - lmin)*lam_hp
+        lam = (lmin + (lmax - lmin)*lam_hp)/ytr.std()             # glmnet: a user-supplied lambda acts as lambda / sd(y)
         K = self.K; act = np.ones(Z.shape[1], bool)
         for _ in range(K + 1):
             A = Zt[:, act].T@Zt[:, act]/n + lam*np.eye(act.sum()); b = np.zeros(Z.shape[1])

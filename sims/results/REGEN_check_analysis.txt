@@ -1,0 +1,54 @@
+== S1 time-varying: mean |bias| by form x arm  (doc: linear weekly 21.6, daily 20.4)
+arm     dailyT  dailyT_ext  dailyT_reg  oracle  weekly  weekly_ext
+form                                                              
+hill      21.5         NaN        20.8    26.2    23.9         NaN
+linear    20.4        20.1        19.5    33.0    21.6        21.6 
+
+== S4a sub-daily truth  (doc: weekly 23.7-25.1, daily 12.6-13.4, native 11.4-13.7)
+arm   daily  native  oracle  weekly
+scen                               
+S4a    13.1    12.7     2.7    24.6 
+
+== S4b alternative DGPs  (doc: weekly_true 16.5 vs 27.4; linear ext 10.3 vs 17.3; twocomp 13.9 vs 21.9)
+arm          dailyT  dailyT_ext  oracle  weekly  weekly_ext
+form                                                       
+linear         21.9        10.3     2.7    23.1        17.3
+log1p          19.6        16.9     2.7    24.0        22.1
+power          31.7        30.3     2.6    28.9        27.9
+twocomp        13.9         NaN     2.8    21.9         NaN
+wearout        23.3         NaN     2.7    28.1         NaN
+weekly_true    27.4         NaN     2.8    16.5         NaN 
+
+== S3 Robyn-style emulation  (doc: rbI 22.8 vs 31.5, rbV 35.9 vs 42.4)
+arm
+grid_dailyT    15.9
+grid_weekly    24.8
+rbI_daily      22.8
+rbI_weekly     31.5
+rbV_daily      35.9
+rbV_weekly     42.4
+Name: ab, dtype: float64 
+
+== S2b targeted weekday, strength > 0  (doc: A weekly 23.9 dailyT 20.6 dow 12.1; B 22.3 / 29.1 / 13.3)
+arm      dailyT  dailyT_dow  oracle  weekly
+profile                                    
+A          20.6        12.1     2.7    23.9
+B          29.1        13.3     2.7    22.3 
+
+== REC shallow saturation: mean |total bias| by freq x estimator x depth  (doc: D/G 18.8 18.6 32.7 41.0 42.2; D/X 18.8 19.4 16.7 12.9 12.9)
+depth         med     mild      x1     x3   x10
+freq est                                       
+D    C       38.8     31.8    25.3   20.5  18.6
+     G       18.8     18.6    32.7   41.0  42.2
+     X       18.8     19.4    16.7   12.9  12.9
+W    C    19918.0  25378.3  9160.3  229.9  92.8
+     G       29.0     24.8    35.9   43.7  45.5
+     X       29.1     26.2    24.4   21.0  21.3 
+
+== RB Robyn-type engine (corrected ridge scaling): mean |total bias| by scenario  (doc: RESULTS_ALL_v3.md C2 table)
+      bias_gridW  bias_gridD  bias_OT  bias_rbSO_W  bias_rbMOnrmse_W  bias_rbMOrssd_W  bias_rbMObal_W  bias_rbSO_D  bias_rbMOnrmse_D  bias_rbMOrssd_D  bias_rbMObal_D
+scen                                                                                                                                                                 
+M1          27.0        21.6      3.8         41.8              38.1             59.5            42.4         37.7              35.6             60.1            45.2
+M2          16.9        15.1      4.0         35.2              30.3             59.4            39.5         27.9              30.0             65.4            38.7
+M3          21.7        18.4      4.2         36.4              32.7             54.0            38.0         38.9              41.3             63.2            43.5
+M7          19.7        21.3      4.1         36.2              27.4             44.5            32.1         32.5              25.5             47.5            30.5

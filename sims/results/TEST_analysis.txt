@@ -1,0 +1,91 @@
+markets 9660 | material share 0.73
+
+=== Label B (market-level better arm), material markets, leave-one-world-out ===
+           full_acc  coverage  sel_acc  worst_world_sel
+T1            0.676       0.0      NaN              NaN
+T2            0.688       0.0      NaN              NaN
+T3            0.686       0.0      NaN              NaN
+T4            0.579       0.0      NaN              NaN
+T5            0.638       0.0      NaN              NaN
+T1+T5         0.676       0.0      NaN              NaN
+ALL_tests     0.684       0.0      NaN              NaN
+ALL+old       0.689       0.0      NaN              NaN
+
+=== Label A (truth is weekly vs daily-or-finer), all markets, leave-one-world-out ===
+           full_acc  coverage  sel_acc  worst_world_sel
+T1            0.957     1.000    0.957            0.569
+T2            0.962     1.000    0.962            0.690
+T3            0.963     0.999    0.963            0.722
+T4            0.792     0.573    0.873            0.027
+T5            0.839     0.921    0.866            0.412
+T1+T5         0.948     1.000    0.948            0.582
+ALL_tests     0.958     0.999    0.958            0.684
+ALL+old       0.941     0.999    0.941            0.610
+
+AUC for world label A: {'T1': 0.998, 'T2c': 0.998, 'T3c': 0.998, 'T4c': 0.828, 'T5c': 0.959}
+AUC for market label B (material): {'T1': 0.727, 'T2c': 0.726, 'T3c': 0.724, 'T4c': 0.673, 'T5c': 0.685}
+
+per-world detail, T5 only, label B:
+           n  full_acc  coverage  sel_acc  thr  n_ans  n_wrong
+world                                                        
+W1      770     0.634       0.0      NaN  2.0      0        0
+W2      865     0.584       0.0      NaN  2.0      0        0
+W3      944     0.529       0.0      NaN  2.0      0        0
+W4     1035     0.806       0.0      NaN  2.0      0        0
+W5     1105     0.668       0.0      NaN  2.0      0        0
+W6      926     0.581       0.0      NaN  2.0      0        0
+W7      831     0.584       0.0      NaN  2.0      0        0
+W8      575     0.717       0.0      NaN  2.0      0        0
+
+per-world detail, ALL_tests, label B:
+           n  full_acc  coverage  sel_acc  thr  n_ans  n_wrong
+world                                                        
+W1      770     0.657       0.0      NaN  2.0      0        0
+W2      865     0.802       0.0      NaN  2.0      0        0
+W3      944     0.593       0.0      NaN  2.0      0        0
+W4     1035     0.804       0.0      NaN  2.0      0        0
+W5     1105     0.676       0.0      NaN  2.0      0        0
+W6      926     0.602       0.0      NaN  2.0      0        0
+W7      831     0.613       0.0      NaN  2.0      0        0
+W8      575     0.727       0.0      NaN  2.0      0        0
+
+per-world detail, ALL_tests, label A:
+           n  full_acc  coverage  sel_acc    thr  n_ans  n_wrong
+world                                                          
+W1     1080     0.999      1.00    0.999  0.008   1080        1
+W2     1080     0.995      1.00    0.995  0.001   1080        5
+W3     1440     0.902      1.00    0.902  0.000   1440      141
+W4     1440     1.000      1.00    1.000  0.000   1440        0
+W5     1440     1.000      1.00    1.000  0.002   1440        0
+W6     1380     0.979      1.00    0.979  0.007   1380       29
+W7     1080     1.000      1.00    1.000  0.001   1080        0
+W8      720     0.681      0.99    0.684  0.013    713      225
+
+GB ceiling label B, LOWO: {'W1': np.float64(0.653), 'W2': np.float64(0.777), 'W3': np.float64(0.649), 'W4': np.float64(0.765), 'W5': np.float64(0.77), 'W6': np.float64(0.676), 'W7': np.float64(0.677), 'W8': np.float64(0.732)}
+
+
+########## CONFIRMATION on fresh batch ##########
+yB T5 full 0.678 coverage 0.0 selective nan
+Empty DataFrame
+Columns: []
+Index: [mean, size]
+yB ALL_tests full 0.706 coverage 0.0 selective nan
+Empty DataFrame
+Columns: []
+Index: [mean, size]
+yB ALL+old full 0.706 coverage 0.0 selective nan
+Empty DataFrame
+Columns: []
+Index: [mean, size]
+yA T5 full 0.906 coverage 0.879 selective 0.95
+world        W1       W2        W3      W4        W5        W6       W7       W8
+mean      0.993    0.861     0.812     1.0     0.999     0.986    0.961    0.871
+size   1059.000  660.000  1125.000  1439.0  1434.000  1324.000  989.000  458.000
+yA ALL_tests full 0.986 coverage 1.0 selective 0.986
+world        W1        W2        W3      W4      W5        W6        W7       W8
+mean      0.999     0.996     0.976     1.0     1.0     0.983     0.998    0.899
+size   1080.000  1080.000  1440.000  1440.0  1440.0  1380.000  1080.000  720.000
+yA ALL+old full 0.987 coverage 1.0 selective 0.987
+world        W1        W2        W3      W4      W5       W6        W7       W8
+mean      0.999     0.998     0.983     1.0     1.0     0.98     0.994    0.911
+size   1080.000  1080.000  1440.000  1440.0  1440.0  1380.00  1080.000  719.000

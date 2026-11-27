@@ -1,0 +1,378 @@
+
+================ NW = 78 weeks ================
+
+-- Mean |total bias| % by scenario and arm
+arm                       W     D    S1    OF   OT
+scen                                              
+M1                     28.1  23.4  23.7  23.4  6.0
+M2                     23.0  22.9  23.9  22.9  6.2
+M3                     24.7  23.0  22.3  21.6  6.8
+M7                     24.1  36.0  34.6  36.0  5.8
+V                      29.1  16.3  16.2  16.3  4.0
+pooled (mean of scen)  25.8  24.3  24.1  24.0  5.8
+
+-- Paired W minus D, |total bias| (positive = daily better); 2-SE rule
+scen   n    W-D   SE       verdict
+  M1 300   4.73 1.68  daily better
+  M2 300   0.11 1.78           tie
+  M3 300   1.71 1.42           tie
+  M7 300 -11.85 3.56 weekly better
+   V 300  12.70 2.01  daily better
+
+-- DECISION LOSS, PRIMARY bounds [0.5, 2.0]: % of true media contribution given up (lower is better)
+arm                       W     D    S1    OF    OT
+scen                                               
+M1                     1.05  0.48  0.51  0.48  0.18
+M2                     2.11  1.33  1.70  1.33  0.40
+M3                     1.58  1.49  1.31  0.98  0.30
+M7                     4.39  4.15  4.03  4.15  0.93
+pooled (mean of scen)  2.28  1.86  1.89  1.73  0.45
+   attainable gain G* (% of true media contribution), mean by scenario: {'M1': 21.13, 'M2': 10.18, 'M3': 16.76, 'M7': 8.28}
+   paired loss differences (positive = second arm has lower loss):
+pair      D-S1       W-D       W-S1
+scen                               
+M1         tie  D better  S1 better
+M2    D better  D better  S1 better
+M3         tie       tie        tie
+M7         tie       tie  S1 better
+scen pair   n  diff   SE   better
+  M1  W-D 300  0.57 0.13 D better
+  M2  W-D 300  0.78 0.19 D better
+  M3  W-D 300  0.08 0.19      tie
+  M7  W-D 300  0.24 0.12      tie
+   pooled W-D loss difference 0.42 (SE 0.08)
+   share of markets that are flat (G* < 1%): 0.070
+   share of attainable gain captured (median, non-flat), by arm and scenario:
+arm      W     D    S1    OF    OT
+scen                              
+M1    0.99  1.00  1.00  1.00  1.00
+M2    0.92  0.96  0.96  0.96  0.99
+M3    0.98  0.98  0.99  0.99  1.00
+M7    0.74  0.74  0.78  0.74  0.98
+   pooled capture median by arm: {'W': 0.95, 'D': 0.975, 'S1': 0.979, 'OF': 0.978, 'OT': 0.998}
+   HARM share (recommended move worse than leaving budget alone), non-flat markets:
+arm       W      D     S1     OF     OT
+scen                                   
+M1    0.020  0.020  0.014  0.020  0.010
+M2    0.149  0.062  0.091  0.062  0.022
+M3    0.070  0.063  0.039  0.032  0.025
+M7    0.303  0.288  0.288  0.288  0.064
+   pooled harm by arm: {'W': 0.132, 'D': 0.105, 'S1': 0.104, 'OF': 0.097, 'OT': 0.03}
+
+-- DECISION LOSS, SECONDARY bounds [0.8, 1.25]: % of true media contribution given up (lower is better)
+arm                       W     D    S1    OF    OT
+scen                                               
+M1                     0.35  0.14  0.13  0.14  0.04
+M2                     0.67  0.42  0.57  0.42  0.14
+M3                     0.44  0.46  0.41  0.31  0.12
+M7                     1.11  1.06  1.02  1.06  0.31
+pooled (mean of scen)  0.64  0.52  0.53  0.48  0.15
+   attainable gain G* (% of true media contribution), mean by scenario: {'M1': 8.72, 'M2': 4.3, 'M3': 7.04, 'M7': 3.57}
+   paired loss differences (positive = second arm has lower loss):
+pair D-S1       W-D       W-S1
+scen                          
+M1    tie  D better  S1 better
+M2    tie  D better        tie
+M3    tie       tie        tie
+M7    tie       tie  S1 better
+scen pair   n  diff   SE   better
+  M1  W-D 300  0.20 0.07 D better
+  M2  W-D 300  0.25 0.07 D better
+  M3  W-D 300 -0.02 0.07      tie
+  M7  W-D 300  0.05 0.04      tie
+   pooled W-D loss difference 0.12 (SE 0.03)
+   share of markets that are flat (G* < 1%): 0.100
+   share of attainable gain captured (median, non-flat), by arm and scenario:
+arm      W     D    S1    OF   OT
+scen                             
+M1    1.00  1.00  1.00  1.00  1.0
+M2    1.00  1.00  1.00  1.00  1.0
+M3    1.00  1.00  1.00  1.00  1.0
+M7    0.98  0.99  0.99  0.99  1.0
+   pooled capture median by arm: {'W': 1.0, 'D': 1.0, 'S1': 1.0, 'OF': 1.0, 'OT': 1.0}
+   HARM share (recommended move worse than leaving budget alone), non-flat markets:
+arm       W      D     S1     OF     OT
+scen                                   
+M1    0.028  0.017  0.010  0.017  0.003
+M2    0.097  0.050  0.078  0.050  0.012
+M3    0.036  0.043  0.032  0.018  0.007
+M7    0.177  0.173  0.169  0.173  0.031
+   pooled harm by arm: {'W': 0.081, 'D': 0.069, 'S1': 0.069, 'OF': 0.062, 'OT': 0.013}
+
+-- Marginal ROI at observed spend: median relative error (median over markets of the market median over channels)
+arm       W      D     S1     OF     OT
+scen                                   
+M1    0.203  0.146  0.145  0.146  0.068
+M2    0.295  0.202  0.212  0.202  0.110
+M3    0.219  0.206  0.162  0.161  0.080
+M7    1.281  1.107  1.236  1.107  0.176
+
+-- Top channel by true marginal ROI correctly identified (share of markets)
+arm       W      D     S1     OF     OT
+scen                                   
+M1    0.863  0.937  0.920  0.937  0.983
+M2    0.740  0.797  0.770  0.797  0.920
+M3    0.833  0.847  0.863  0.877  0.947
+M7    0.623  0.633  0.633  0.633  0.853
+   pooled: {'W': 0.765, 'D': 0.803, 'S1': 0.797, 'OF': 0.811, 'OT': 0.926}
+
+-- Full channel ordering by marginal ROI correct (share of markets)
+arm       W      D     S1     OF     OT
+scen                                   
+M1    0.693  0.810  0.777  0.810  0.950
+M2    0.567  0.637  0.597  0.637  0.803
+M3    0.673  0.683  0.707  0.730  0.850
+M7    0.403  0.443  0.437  0.443  0.700
+   pooled: {'W': 0.584, 'D': 0.643, 'S1': 0.629, 'OF': 0.655, 'OT': 0.826}
+
+================ NW = 156 weeks ================
+
+-- Mean |total bias| % by scenario and arm
+arm                       W     D    S1    OF   OT
+scen                                              
+M1                     23.9  20.9  21.4  20.9  4.3
+M2                     16.2  16.9  16.0  16.9  4.1
+M3                     22.9  23.0  19.9  19.0  4.5
+M7                     18.2  20.8  21.0  20.8  3.8
+V                      23.1  15.4  15.4  15.4  2.6
+pooled (mean of scen)  20.9  19.4  18.7  18.6  3.9
+
+-- Paired W minus D, |total bias| (positive = daily better); 2-SE rule
+scen   n   W-D   SE      verdict
+  M1 300  3.08 1.64          tie
+  M2 300 -0.72 1.31          tie
+  M3 300 -0.08 1.79          tie
+  M7 300 -2.62 1.66          tie
+   V 300  7.63 1.72 daily better
+
+-- DECISION LOSS, PRIMARY bounds [0.5, 2.0]: % of true media contribution given up (lower is better)
+arm                       W     D    S1    OF    OT
+scen                                               
+M1                     0.67  0.30  0.34  0.30  0.11
+M2                     1.14  0.67  0.65  0.67  0.17
+M3                     0.77  0.90  0.57  0.49  0.14
+M7                     4.38  4.45  4.33  4.45  0.48
+pooled (mean of scen)  1.74  1.58  1.47  1.48  0.22
+   attainable gain G* (% of true media contribution), mean by scenario: {'M1': 21.43, 'M2': 10.26, 'M3': 17.12, 'M7': 7.92}
+   paired loss differences (positive = second arm has lower loss):
+pair       D-S1       W-D       W-S1
+scen                                
+M1          tie  D better  S1 better
+M2          tie  D better  S1 better
+M3    S1 better       tie  S1 better
+M7          tie       tie        tie
+scen pair   n  diff   SE   better
+  M1  W-D 300  0.37 0.09 D better
+  M2  W-D 300  0.47 0.13 D better
+  M3  W-D 300 -0.13 0.10      tie
+  M7  W-D 300 -0.08 0.11      tie
+   pooled W-D loss difference 0.16 (SE 0.05)
+   share of markets that are flat (G* < 1%): 0.074
+   share of attainable gain captured (median, non-flat), by arm and scenario:
+arm      W     D    S1    OF    OT
+scen                              
+M1    0.99  1.00  1.00  1.00  1.00
+M2    0.96  0.98  0.98  0.98  1.00
+M3    1.00  0.99  1.00  1.00  1.00
+M7    0.63  0.70  0.70  0.70  0.99
+   pooled capture median by arm: {'W': 0.979, 'D': 0.984, 'S1': 0.987, 'OF': 0.987, 'OT': 0.999}
+   HARM share (recommended move worse than leaving budget alone), non-flat markets:
+arm       W      D     S1     OF     OT
+scen                                   
+M1    0.027  0.010  0.014  0.010  0.007
+M2    0.055  0.030  0.022  0.030  0.004
+M3    0.035  0.032  0.025  0.018  0.007
+M7    0.300  0.296  0.288  0.296  0.019
+   pooled harm by arm: {'W': 0.1, 'D': 0.087, 'S1': 0.083, 'OF': 0.084, 'OT': 0.009}
+
+-- DECISION LOSS, SECONDARY bounds [0.8, 1.25]: % of true media contribution given up (lower is better)
+arm                       W     D    S1    OF    OT
+scen                                               
+M1                     0.20  0.06  0.08  0.06  0.04
+M2                     0.36  0.26  0.24  0.26  0.06
+M3                     0.25  0.29  0.21  0.18  0.05
+M7                     1.11  1.09  1.10  1.09  0.16
+pooled (mean of scen)  0.48  0.43  0.40  0.40  0.07
+   attainable gain G* (% of true media contribution), mean by scenario: {'M1': 8.79, 'M2': 4.34, 'M3': 7.16, 'M7': 3.48}
+   paired loss differences (positive = second arm has lower loss):
+pair       D-S1       W-D       W-S1
+scen                                
+M1          tie  D better  S1 better
+M2          tie  D better  S1 better
+M3    S1 better       tie        tie
+M7          tie       tie        tie
+scen pair   n  diff   SE   better
+  M1  W-D 300  0.14 0.05 D better
+  M2  W-D 300  0.11 0.05 D better
+  M3  W-D 300 -0.04 0.04      tie
+  M7  W-D 300  0.02 0.04      tie
+   pooled W-D loss difference 0.06 (SE 0.02)
+   share of markets that are flat (G* < 1%): 0.104
+   share of attainable gain captured (median, non-flat), by arm and scenario:
+arm      W     D    S1    OF   OT
+scen                             
+M1    1.00  1.00  1.00  1.00  1.0
+M2    1.00  1.00  1.00  1.00  1.0
+M3    1.00  1.00  1.00  1.00  1.0
+M7    0.96  0.98  0.98  0.98  1.0
+   pooled capture median by arm: {'W': 1.0, 'D': 1.0, 'S1': 1.0, 'OF': 1.0, 'OT': 1.0}
+   HARM share (recommended move worse than leaving budget alone), non-flat markets:
+arm       W      D     S1     OF     OT
+scen                                   
+M1    0.017  0.000  0.003  0.000  0.003
+M2    0.034  0.031  0.023  0.031  0.004
+M3    0.018  0.033  0.022  0.011  0.000
+M7    0.171  0.167  0.167  0.167  0.016
+   pooled harm by arm: {'W': 0.058, 'D': 0.055, 'S1': 0.051, 'OF': 0.049, 'OT': 0.006}
+
+-- Marginal ROI at observed spend: median relative error (median over markets of the market median over channels)
+arm       W      D     S1     OF     OT
+scen                                   
+M1    0.137  0.094  0.093  0.094  0.047
+M2    0.187  0.140  0.147  0.140  0.071
+M3    0.136  0.167  0.112  0.112  0.053
+M7    1.128  0.982  1.064  0.982  0.109
+
+-- Top channel by true marginal ROI correctly identified (share of markets)
+arm       W      D     S1     OF     OT
+scen                                   
+M1    0.910  0.927  0.920  0.927  0.963
+M2    0.817  0.893  0.870  0.893  0.947
+M3    0.897  0.877  0.913  0.927  0.970
+M7    0.593  0.590  0.607  0.590  0.893
+   pooled: {'W': 0.804, 'D': 0.822, 'S1': 0.828, 'OF': 0.834, 'OT': 0.943}
+
+-- Full channel ordering by marginal ROI correct (share of markets)
+arm       W      D     S1     OF    OT
+scen                                  
+M1    0.770  0.810  0.800  0.810  0.92
+M2    0.657  0.767  0.737  0.767  0.89
+M3    0.777  0.733  0.793  0.817  0.92
+M7    0.437  0.437  0.437  0.437  0.81
+   pooled: {'W': 0.66, 'D': 0.687, 'S1': 0.692, 'OF': 0.708, 'OT': 0.885}
+
+================ NW = 260 weeks ================
+
+-- Mean |total bias| % by scenario and arm
+arm                       W     D    S1    OF   OT
+scen                                              
+M1                     23.3  20.0  19.6  20.0  3.3
+M2                     13.5  13.3  13.0  13.3  3.1
+M3                     21.1  18.9  16.3  16.2  3.3
+M7                     13.9  16.9  16.9  16.9  3.0
+V                      24.2  13.6  13.6  13.6  2.2
+pooled (mean of scen)  19.2  16.5  15.9  16.0  3.0
+
+-- Paired W minus D, |total bias| (positive = daily better); 2-SE rule
+scen   n   W-D   SE       verdict
+  M1 300  3.25 1.67           tie
+  M2 300  0.21 0.74           tie
+  M3 300  2.23 1.49           tie
+  M7 300 -3.02 0.97 weekly better
+   V 300 10.63 1.82  daily better
+
+-- DECISION LOSS, PRIMARY bounds [0.5, 2.0]: % of true media contribution given up (lower is better)
+arm                       W     D    S1    OF    OT
+scen                                               
+M1                     0.36  0.24  0.25  0.24  0.03
+M2                     0.84  0.49  0.50  0.49  0.16
+M3                     0.65  0.88  0.50  0.37  0.06
+M7                     3.75  3.72  3.59  3.72  0.34
+pooled (mean of scen)  1.40  1.33  1.21  1.20  0.15
+   attainable gain G* (% of true media contribution), mean by scenario: {'M1': 21.6, 'M2': 10.17, 'M3': 17.14, 'M7': 7.88}
+   paired loss differences (positive = second arm has lower loss):
+pair       D-S1       W-D       W-S1
+scen                                
+M1          tie  D better  S1 better
+M2          tie  D better  S1 better
+M3    S1 better       tie        tie
+M7          tie       tie  S1 better
+scen pair   n  diff   SE   better
+  M1  W-D 300  0.12 0.05 D better
+  M2  W-D 300  0.36 0.09 D better
+  M3  W-D 300 -0.22 0.16      tie
+  M7  W-D 300  0.03 0.10      tie
+   pooled W-D loss difference 0.07 (SE 0.05)
+   share of markets that are flat (G* < 1%): 0.073
+   share of attainable gain captured (median, non-flat), by arm and scenario:
+arm      W     D    S1    OF   OT
+scen                             
+M1    1.00  1.00  1.00  1.00  1.0
+M2    0.97  0.99  0.99  0.99  1.0
+M3    1.00  1.00  1.00  1.00  1.0
+M7    0.73  0.73  0.74  0.73  1.0
+   pooled capture median by arm: {'W': 0.985, 'D': 0.992, 'S1': 0.993, 'OF': 0.993, 'OT': 1.0}
+   HARM share (recommended move worse than leaving budget alone), non-flat markets:
+arm       W      D     S1     OF     OT
+scen                                   
+M1    0.017  0.010  0.010  0.010  0.000
+M2    0.041  0.030  0.033  0.030  0.004
+M3    0.021  0.049  0.021  0.018  0.000
+M7    0.282  0.271  0.260  0.271  0.019
+   pooled harm by arm: {'W': 0.086, 'D': 0.086, 'S1': 0.077, 'OF': 0.078, 'OT': 0.005}
+
+-- DECISION LOSS, SECONDARY bounds [0.8, 1.25]: % of true media contribution given up (lower is better)
+arm                       W     D    S1    OF    OT
+scen                                               
+M1                     0.08  0.05  0.05  0.05  0.01
+M2                     0.27  0.17  0.17  0.17  0.06
+M3                     0.19  0.29  0.12  0.09  0.02
+M7                     1.00  0.92  0.95  0.92  0.13
+pooled (mean of scen)  0.38  0.36  0.32  0.31  0.05
+   attainable gain G* (% of true media contribution), mean by scenario: {'M1': 8.85, 'M2': 4.3, 'M3': 7.16, 'M7': 3.46}
+   paired loss differences (positive = second arm has lower loss):
+pair       D-S1       W-D       W-S1
+scen                                
+M1          tie       tie        tie
+M2          tie  D better  S1 better
+M3    S1 better       tie        tie
+M7          tie  D better        tie
+scen pair   n  diff   SE   better
+  M1  W-D 300  0.03 0.01      tie
+  M2  W-D 300  0.10 0.04 D better
+  M3  W-D 300 -0.11 0.07      tie
+  M7  W-D 300  0.08 0.04 D better
+   pooled W-D loss difference 0.03 (SE 0.02)
+   share of markets that are flat (G* < 1%): 0.107
+   share of attainable gain captured (median, non-flat), by arm and scenario:
+arm      W     D    S1    OF   OT
+scen                             
+M1    1.00  1.00  1.00  1.00  1.0
+M2    1.00  1.00  1.00  1.00  1.0
+M3    1.00  1.00  1.00  1.00  1.0
+M7    0.97  0.98  0.98  0.98  1.0
+   pooled capture median by arm: {'W': 1.0, 'D': 1.0, 'S1': 1.0, 'OF': 1.0, 'OT': 1.0}
+   HARM share (recommended move worse than leaving budget alone), non-flat markets:
+arm       W      D     S1     OF     OT
+scen                                   
+M1    0.000  0.000  0.000  0.000  0.000
+M2    0.027  0.015  0.019  0.015  0.004
+M3    0.015  0.029  0.015  0.011  0.000
+M7    0.137  0.133  0.141  0.133  0.012
+   pooled harm by arm: {'W': 0.042, 'D': 0.042, 'S1': 0.041, 'OF': 0.037, 'OT': 0.004}
+
+-- Marginal ROI at observed spend: median relative error (median over markets of the market median over channels)
+arm       W      D     S1     OF     OT
+scen                                   
+M1    0.117  0.082  0.079  0.082  0.039
+M2    0.144  0.114  0.117  0.114  0.058
+M3    0.109  0.131  0.083  0.082  0.041
+M7    1.264  1.052  1.182  1.052  0.081
+
+-- Top channel by true marginal ROI correctly identified (share of markets)
+arm       W      D     S1     OF     OT
+scen                                   
+M1    0.950  0.953  0.960  0.953  0.997
+M2    0.847  0.890  0.897  0.890  0.960
+M3    0.913  0.880  0.940  0.940  0.977
+M7    0.657  0.640  0.657  0.640  0.920
+   pooled: {'W': 0.842, 'D': 0.841, 'S1': 0.863, 'OF': 0.856, 'OT': 0.963}
+
+-- Full channel ordering by marginal ROI correct (share of markets)
+arm       W      D     S1     OF     OT
+scen                                   
+M1    0.860  0.893  0.897  0.893  0.967
+M2    0.700  0.783  0.777  0.783  0.910
+M3    0.817  0.780  0.867  0.857  0.933
+M7    0.433  0.430  0.443  0.430  0.820
+   pooled: {'W': 0.702, 'D': 0.722, 'S1': 0.746, 'OF': 0.741, 'OT': 0.908}

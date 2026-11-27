@@ -1,0 +1,5 @@
+oracle per-channel accuracy by scenario:
+ {'M1': 0.986, 'M2': 0.966, 'M3': 0.977, 'M4': 0.941, 'M5': 0.933, 'M6': 0.986, 'M7': 0.987, 'M8': 0.933, 'M9': 0.938, 'M10': 0.989}
+by share bin: {Interval(0.0, 0.1, closed='right'): 0.838, Interval(0.1, 0.3, closed='right'): 0.971, Interval(0.3, 1.01, closed='right'): 0.992}
+by pattern: {'bursty': 0.974, 'flighting': 0.947, 'pulsing': 0.968, 'real': 0.973, 'smooth': 0.944, 'sporadic': 0.968}
+pooled M1-M7,M10: 0.968

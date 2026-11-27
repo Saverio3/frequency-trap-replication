@@ -1,16 +1,9 @@
 __pycache__/
 *.pyc
 .DS_Store
-# big regenerable outputs of the Python studies (re-create with the commands in the README)
+# full-run result CSVs of the Python studies ARE committed (regenerated 27 Nov 2026).
+# Only intermediate caches and smoke outputs are ignored.
 sims/results/*.pkl
-sims/results/S*_full.csv
-sims/results/MC_*.csv
-sims/results/DEC_*.csv
-sims/results/DSH_*.csv
-sims/results/REC_*.csv
-sims/results/SEL_*.csv
-sims/results/TEST_*.csv
-sims/results/RB_*.csv
 sims/results/*_smoke.csv
 # Robyn working folders
 rlibB/

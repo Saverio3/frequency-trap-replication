@@ -1,0 +1,118 @@
+markets 39300 {'W1': 5400, 'W2': 5400, 'W3': 7200, 'W4': 7200, 'W5': 7200, 'W6': 6900}
+
+ tree
+|--- dR2 <= 0.14
+|   |--- ZS <= 0.57
+|   |   |--- class: 1
+|   |--- ZS >  0.57
+|   |   |--- class: 1
+|--- dR2 >  0.14
+|   |--- DEPTH <= 0.97
+|   |   |--- class: 1
+|   |--- DEPTH >  0.97
+|   |   |--- class: 1
+
+
+ tree_screen
+|--- ZS <= 0.28
+|   |--- CV <= 0.30
+|   |   |--- class: 1
+|   |--- CV >  0.30
+|   |   |--- class: 1
+|--- ZS >  0.28
+|   |--- DEPTH <= 0.53
+|   |   |--- class: 1
+|   |--- DEPTH >  0.53
+|   |   |--- class: 1
+
+
+=== mean |bias| by selector and world (eval set) ===
+        weekly  daily  insample  holdout  both  hedge  tree  tree_screen  cell_oracle  mkt_oracle
+world                                                                                           
+W1       24.0   15.1      15.2     15.2  15.1   16.8  15.1         15.1         13.8        10.2
+W2       15.8   27.3      15.8     16.1  16.1   18.7  27.3         27.3         14.4        11.8
+W3       27.7   23.1      24.1     23.9  23.5   22.8  23.1         23.1         22.2        17.6
+W4       25.2   13.4      13.4     13.4  13.4   17.2  13.4         13.4         12.8         9.5
+W5       23.6   17.2      17.2     17.4  17.2   17.3  17.2         17.2         14.1        11.3
+W6       25.7   22.0      22.1     22.5  22.1   20.6  22.0         22.0         20.6        17.1
+MACRO    23.7   19.7      18.0     18.1  17.9   18.9  19.7         19.7         16.3        12.9
+
+=== W2-W3 subworlds ===
+                   weekly  daily  insample  holdout  both  hedge  tree  tree_screen  cell_oracle  mkt_oracle
+world sub                                                                                                   
+W2    weekly_true    15.8   27.3      15.8     16.1  16.1   18.7  27.3         27.3         14.4        11.8
+W3    tv_daily       24.5   21.2      21.1     20.9  21.1   20.3  21.2         21.2         19.5        15.3
+      tv_weekly      30.8   25.0      27.0     26.8  25.9   25.2  25.0         25.0         24.8        19.8
+W6    linear         24.0   22.0      22.8     22.6  22.5   21.2  22.0         22.0         19.9        16.6
+      log1p          24.2   19.6      19.6     19.8  19.6   16.5  19.6         19.6         19.4        16.6
+      power          28.4   32.9      32.9     33.0  32.9   30.0  32.9         32.9         28.1        24.6
+      twocomp        22.5   14.0      13.8     16.0  14.0   15.1  14.0         14.0         12.3         9.4
+      wearout        28.6   22.9      22.9     23.3  22.9   23.7  22.9         22.9         21.9        17.1
+
+=== hit rate among material markets (|diff|>5 pts) ===
+        n_material  share_material  daily_better_share insample holdout  both  tree tree_screen
+world                                                                                         
+W1           1931            0.72                0.68     0.68    0.68  0.68  0.68        0.68
+W2           4236            0.78                0.19     0.81    0.79  0.79  0.19        0.19
+W3           4676            0.65                0.61     0.62    0.60  0.61  0.61        0.61
+W4           5264            0.73                0.79     0.79    0.79  0.79  0.79        0.79
+W5           5310            0.74                0.69     0.69    0.69  0.69  0.69        0.69
+W6           4698            0.68                0.61     0.60    0.59  0.61  0.61        0.61
+       insample_ci_lo  holdout_ci_lo  both_ci_lo  tree_ci_lo  tree_screen_ci_lo
+world                                                                          
+W1               0.66           0.66        0.66        0.66               0.66
+W2               0.80           0.78        0.78        0.17               0.17
+W3               0.60           0.58        0.60        0.60               0.60
+W4               0.78           0.78        0.78        0.78               0.78
+W5               0.68           0.67        0.68        0.68               0.68
+W6               0.59           0.58        0.59        0.59               0.59
+
+=== disagreement flag |D|<10 ===
+                 n  mean_absdiff  p90_absdiff  mean_aw  mean_ad
+world robust                                                   
+W1    False   1813          25.8         49.8     29.4     16.4
+      True     887           4.1          8.3     12.8     12.5
+W2    False   4068          24.6         45.9     16.6     31.6
+      True    1332           3.9          7.9     13.2     14.1
+W3    False   4091          24.5         47.6     33.6     25.7
+      True    3109           3.8          7.9     19.9     19.6
+W4    False   4705          27.6         60.3     32.2     15.0
+      True    2495           4.1          8.5     12.0     10.4
+W5    False   4980          24.6         49.6     28.3     19.5
+      True    2220           4.1          8.0     13.1     12.3
+W6    False   4212          19.6         38.2     29.4     23.4
+      True    2688           3.8          7.2     20.0     19.9
+
+pooled
+             n  mean_absdiff  share_diff_gt5  mean_aw  mean_ad
+robust                                                       
+False   23869         24.41            0.92    28.26    22.18
+True    12731          3.95            0.33    15.98    15.52
+
+=== EXPLORATORY: hit rate of holdout / insample by size of signal (material markets, pooled) ===
+                       hit_h      
+                        mean  size
+hg_bin                            
+(-0.000999171, 0.0777]  0.55  5223
+(0.0777, 0.187]         0.62  5223
+(0.187, 0.303]          0.70  5223
+(0.303, 0.453]          0.77  5223
+(0.453, 3.059]          0.82  5223
+                     hit_i      
+                      mean  size
+dr_bin                          
+(-0.0009894, 0.0472]  0.56  5223
+(0.0472, 0.0961]      0.63  5223
+(0.0961, 0.141]       0.70  5223
+(0.141, 0.197]        0.80  5223
+(0.197, 0.571]        0.82  5223
+
+=== cell verdicts by world ===
+ verdict  daily  tie  weekly
+world                      
+W1          37   10       7
+W2           5    6      43
+W3          40   26       6
+W4          59   10       3
+W5          56    4      12
+W6          41   19       9

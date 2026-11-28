@@ -1,0 +1,90 @@
+runs per tag: {'inc4000': 12.0, 'orig2000': 12.0, 'rep2000': 12.0} (2 rows per run)
+
+=========== rule: errscore (PRIMARY) ===========
+bias % of true total, by market, arm and run:
+tag         orig2000  rep2000  inc4000
+market arm                            
+0      A        -9.7     -9.7    -25.4
+       B       -25.3    -25.3    -27.7
+2      A       -19.6    -19.6     -3.4
+       B        -4.0     -4.0    -20.5
+4      A       -87.8    -87.8    -86.9
+       B       -63.8    -63.8    -63.4
+7      A        -1.5     -1.5    -27.8
+       B       -51.7    -51.7     -8.3
+11     A       -87.3    -87.3    -64.8
+       B       -80.8    -80.8    -79.2
+13     A       -66.1    -66.1    -67.6
+       B       -70.4    -70.4    -70.9
+
+cells with all three runs: 12
+noise N = |orig2000 - rep2000|: median 0.0, mean 0.0, max 0.0 points; implied single-run SD about 0.0
+budget shift S = inc4000 - mean(2000 runs): median |S| 9.0, mean S +1.9 (SE 5.4), max |S| 43.4
+pre-declared reading: INCONCLUSIVE (median|S|/median N = nan)
+
+A minus B on |bias| (positive = B better), by market and run:
+        orig2000  rep2000  inc4000
+market                            
+0          -15.6    -15.6     -2.3
+2           15.6     15.6    -17.0
+4           24.0     24.0     23.5
+7          -50.2    -50.2     19.5
+11           6.4      6.4    -14.4
+13          -4.3     -4.3     -3.2
+mean over the six markets: {'orig2000': -4.0, 'rep2000': -4.0, 'inc4000': 1.0}  sign changes of A-B between runs (markets): 3 of 6
+
+=========== rule: nrmse (secondary) ===========
+bias % of true total, by market, arm and run:
+tag         orig2000  rep2000  inc4000
+market arm                            
+0      A       -19.3    -19.3    -25.4
+       B       -39.1    -39.1    -41.5
+2      A       -28.0    -28.0    -30.6
+       B       -35.9    -35.9    -20.5
+4      A       -60.9    -60.9    -64.2
+       B       -66.4    -66.4    -66.4
+7      A       -27.5    -27.5    -16.5
+       B       -30.6    -30.6    -36.2
+11     A       -66.1    -66.1    -64.6
+       B       -78.6    -78.6    -76.7
+13     A       -66.1    -66.1    -67.8
+       B       -70.4    -70.4    -70.9
+
+cells with all three runs: 12
+noise N = |orig2000 - rep2000|: median 0.0, mean 0.0, max 0.0 points; implied single-run SD about 0.0
+budget shift S = inc4000 - mean(2000 runs): median |S| 2.5, mean S +0.7 (SE 1.9), max |S| 15.5
+pre-declared reading: INCONCLUSIVE (median|S|/median N = nan)
+
+A minus B on |bias| (positive = B better), by market and run:
+        orig2000  rep2000  inc4000
+market                            
+0          -19.9    -19.9    -16.1
+2           -7.9     -7.9     10.1
+4           -5.5     -5.5     -2.2
+7           -3.1     -3.1    -19.7
+11         -12.5    -12.5    -12.2
+13          -4.3     -4.3     -3.1
+mean over the six markets: {'orig2000': -8.9, 'rep2000': -8.9, 'inc4000': -7.2}  sign changes of A-B between runs (markets): 1 of 6
+
+=========== Convergence outcomes (primary-rule rows; one row per run) ===========
+conv      NRMSE only  RSSD only  both  neither
+tag                                           
+inc4000            4          0     6        2
+orig2000           3          1     5        3
+rep2000            3          1     5        3
+conv          NRMSE only  RSSD only  both  neither
+tag      arm                                      
+inc4000  A             2          0     2        2
+         B             2          0     4        0
+orig2000 A             2          0     2        2
+         B             1          1     3        1
+rep2000  A             2          0     2        2
+         B             1          1     3        1
+
+Number of Pareto-1 models (median per tag): {'inc4000': 31.0, 'orig2000': 18.0, 'rep2000': 18.0}
+
+=========== Pareto-1 spread of total contribution vs run-to-run noise (new runs only) ===========
+         spread_pts  iqr_pts  sel_rank_nrmse  sel_rank_rssd  sel_pct_nrmse  sel_pct_rssd
+tag                                                                                     
+inc4000       26.82     5.42            13.5           12.5           0.64          0.40
+rep2000       40.01    14.56             6.0           11.0           0.38          0.69

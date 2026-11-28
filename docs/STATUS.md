@@ -35,10 +35,13 @@ Two fixes made while regenerating:
 - `rb_multi.py` in the repo was the version BEFORE the ridge-scaling fix (it reproduced the discarded run). The fix (`lambda / sd(y)`, as glmnet treats a user-supplied lambda) was re-applied; the corrected run reproduces the documented table to the decimal.
 - README: stage B of the multichannel study must be run with `MCPREFIX=MCB`; without it, B is an exact copy of A.
 
+## 2b. Robyn stability experiment, run 27-28 Nov 2026 on the author's laptop
+`robyn_experiment/RXM_stability.csv`, `stab_manifest.csv`, `stability/` (24 runs x models, convergence, session), analysis `RXM_stability_analysis.txt` (`an_stab.py`).
+Finding that breaks the pre-registered design: with seed 1 the 2,000-iteration repeat reproduces the original run EXACTLY (all 24 rows), so Robyn IS reproducible under a fixed seed and the noise unit N is 0. The pre-registered reading is therefore undefined (reported as INCONCLUSIVE). Run-to-run noise needs a repeat with different seeds.
+
 ## 3. Pending (run on the author's machine)
 | Result | Why not run here |
 |---|---|
-| Robyn stability experiment: `RXM_stability.csv`, `stab_pareto/`, `stab_manifest.csv` (24 Robyn runs) | needs R + patched Robyn; about 9 h on a 15-core laptop |
 | Full re-run of `original_paper/paper_engine.py` | about a day; results already IN, no re-run needed |
 | Re-running any real-Robyn experiment (`run_robyn_real.R`, `run_robyn_mc.R`) | needs R + Robyn; results already IN |
 

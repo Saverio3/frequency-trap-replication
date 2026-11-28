@@ -256,7 +256,7 @@ jobs:
       - name: Commit results into the repo (robyn_experiment/stability_seeds23/)
         if: always()
         run: |
-          test -d combined-newseeds || exit 0
+          test -s combined-newseeds/RXM_stability_newseeds.csv || { echo 'no results to commit'; exit 0; }
           mkdir -p robyn_experiment/stability_seeds23
           cp -r combined-newseeds/. robyn_experiment/stability_seeds23/
           git config user.name "github-actions[bot]"

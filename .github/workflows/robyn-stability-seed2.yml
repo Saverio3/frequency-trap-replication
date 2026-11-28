@@ -133,7 +133,14 @@ jobs:
           STAB_PARETO_DIR: results/newseeds/stab_pareto
           STAB_MANIFEST_FILE: results/newseeds/stab_manifest_newseeds.csv
         run: |
+          set -euo pipefail
           mkdir -p results/newseeds/stab_pareto
+          echo "Smoke test: market ${{ matrix.market }}, arm ${{ matrix.arm }}, 300 iterations x 1 trial"
+          STAB_PARETO_DIR=results/newseeds/smoke_pareto STAB_MANIFEST_FILE=results/newseeds/smoke_manifest.csv \
+            Rscript run_robyn_stab.R ${{ matrix.market }} ${{ matrix.arm }} 300 1 smoke_seed${{ matrix.seed }} results/newseeds/smoke.csv 2 ${{ matrix.seed }}
+          test -s results/newseeds/smoke.csv
+          rm -rf results/newseeds/smoke_pareto results/newseeds/smoke_manifest.csv results/newseeds/smoke.csv
+          echo "Full run: ${{ matrix.iterations }} iterations x 5 trials, seed ${{ matrix.seed }}"
           Rscript run_robyn_stab.R ${{ matrix.market }} ${{ matrix.arm }} ${{ matrix.iterations }} 5 ${{ matrix.tag }} results/newseeds/RXM_stability_newseeds.csv 2 ${{ matrix.seed }}
           test -s results/newseeds/RXM_stability_newseeds.csv
           test -s results/newseeds/stab_manifest_newseeds.csv

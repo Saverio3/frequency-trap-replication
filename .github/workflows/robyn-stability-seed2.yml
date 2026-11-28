@@ -9,8 +9,6 @@ on:
         default: "8"
         type: choice
         options: ["2", "4", "6", "8"]
-      seed:
-        
 permissions:
   contents: read
 
@@ -134,11 +132,11 @@ jobs:
           ROBYN_LIB_DIRS: ${{ github.workspace }}/rlibB
           R_LIBS: ${{ github.workspace }}/rlibB
           RETICULATE_PYTHON: ${{ env.pythonLocation }}/bin/python
-          STAB_PARETO_DIR: results/seed2/stab_pareto
-          STAB_MANIFEST_FILE: results/seed2/stab_manifest_seed2.csv
+          STAB_PARETO_DIR: results/newseeds/stab_pareto
+          STAB_MANIFEST_FILE: results/seed2/stab_manifest_newseeds.csv
         run: |
           mkdir -p results/seed2/stab_pareto
-          Rscript run_robyn_stab.R ${{ matrix.market }} ${{ matrix.arm }} ${{ matrix.iterations }} 5 ${{ matrix.tag }} results/seed2/RXM_stability_seed2.csv 2 ${{ matrix.seed }}
+          Rscript run_robyn_stab.R ${{ matrix.market }} ${{ matrix.arm }} ${{ matrix.iterations }} 5 ${{ matrix.tag }} results/seed2/RXM_stability_newseeds.csv 2 ${{ matrix.seed }}
           test -s results/seed2/RXM_stability_seed2.csv
           test -s results/seed2/stab_manifest_seed2.csv
           test -s results/seed2/stab_pareto/m$(printf '%02d' ${{ matrix.market }})_${{ matrix.arm }}_${{ matrix.tag }}_models.csv
@@ -155,7 +153,7 @@ jobs:
           retention-days: 30
 
   collect:
-    name: Collect and validate the 24 experiment cells
+    name: Collect and validate the 48 experiment cells
     if: always()
     needs: robyn
     runs-on: ubuntu-22.04
@@ -174,7 +172,7 @@ jobs:
           root = Path("seed2-artifacts")
           summaries = list(root.glob("*/RXM_stability_seed2.csv"))
           manifests = list(root.glob("*/stab_manifest_seed2.csv"))
-          out = Path("combined-seed2")
+          out = Path("combined-newseeds")
           (out / "stab_pareto").mkdir(parents=True, exist_ok=True)
           def combine(files, target):
               rows, header = [], None

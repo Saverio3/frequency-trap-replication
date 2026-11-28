@@ -1,0 +1,192 @@
+name: Robyn stability — independent seed 2
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_parallel:
+        description: "Number of simultaneous market/arm/budget jobs (GitHub-hosted runners)"
+        required: true
+        default: "6"
+        type: choice
+        options: ["2", "4", "6", "8"]
+      seed:
+        description: "Independent optimiser seed (keep 2 for this pre-planned extension)"
+        required: true
+        default: "2"
+        type: choice
+        options: ["2"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: robyn-stability-seed2-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  robyn:
+    name: "M${{ matrix.market }} / ${{ matrix.arm }} / ${{ matrix.iterations }} iters"
+    runs-on: ubuntu-22.04
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      max-parallel: ${{ fromJSON(inputs.max_parallel) }}
+      matrix:
+        include:
+          - { market: 0, arm: A, iterations: 2000, tag: seed2_rep2000 }
+          - { market: 0, arm: A, iterations: 4000, tag: seed2_inc4000 }
+          - { market: 0, arm: B, iterations: 2000, tag: seed2_rep2000 }
+          - { market: 0, arm: B, iterations: 4000, tag: seed2_inc4000 }
+          - { market: 2, arm: A, iterations: 2000, tag: seed2_rep2000 }
+          - { market: 2, arm: A, iterations: 4000, tag: seed2_inc4000 }
+          - { market: 2, arm: B, iterations: 2000, tag: seed2_rep2000 }
+          - { market: 2, arm: B, iterations: 4000, tag: seed2_inc4000 }
+          - { market: 4, arm: A, iterations: 2000, tag: seed2_rep2000 }
+          - { market: 4, arm: A, iterations: 4000, tag: seed2_inc4000 }
+          - { market: 4, arm: B, iterations: 2000, tag: seed2_rep2000 }
+          - { market: 4, arm: B, iterations: 4000, tag: seed2_inc4000 }
+          - { market: 7, arm: A, iterations: 2000, tag: seed2_rep2000 }
+          - { market: 7, arm: A, iterations: 4000, tag: seed2_inc4000 }
+          - { market: 7, arm: B, iterations: 2000, tag: seed2_rep2000 }
+          - { market: 7, arm: B, iterations: 4000, tag: seed2_inc4000 }
+          - { market: 11, arm: A, iterations: 2000, tag: seed2_rep2000 }
+          - { market: 11, arm: A, iterations: 4000, tag: seed2_inc4000 }
+          - { market: 11, arm: B, iterations: 2000, tag: seed2_rep2000 }
+          - { market: 11, arm: B, iterations: 4000, tag: seed2_inc4000 }
+          - { market: 13, arm: A, iterations: 2000, tag: seed2_rep2000 }
+          - { market: 13, arm: A, iterations: 4000, tag: seed2_inc4000 }
+          - { market: 13, arm: B, iterations: 2000, tag: seed2_rep2000 }
+          - { market: 13, arm: B, iterations: 4000, tag: seed2_inc4000 }
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: "4.4.2"
+          use-public-rspm: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install Python optimiser
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "numpy<2" "nevergrad==1.0.12"
+
+      - name: Install R dependencies
+        run: |
+          options(repos = c(CRAN = "https://packagemanager.posit.co/cran/__linux__/jammy/latest"))
+          deps <- c("glmnet", "prophet", "reticulate", "doParallel", "foreach",
+                    "doRNG", "dplyr", "tidyr", "stringr", "lubridate", "jsonlite",
+                    "ggplot2", "ggridges", "patchwork", "minpack.lm", "data.table",
+                    "Rcpp", "rlang", "magrittr", "gridExtra", "scales", "nloptr", "lares")
+          install.packages(deps)
+          missing <- deps[!vapply(deps, requireNamespace, logical(1), quietly = TRUE)]
+          if (length(missing)) stop("Missing R packages: ", paste(missing, collapse = ", "))
+        shell: Rscript {0}
+
+      - name: Build and install Robyn 3.12.1 with the study's Arm B patch
+        run: |
+          set -euxo pipefail
+          curl --fail --location --retry 4 \
+            https://cran.r-project.org/src/contrib/Archive/Robyn/Robyn_3.12.1.tar.gz \
+            --output /tmp/Robyn_3.12.1.tar.gz
+          mkdir -p /tmp/robyn-src rlibB
+          tar -xzf /tmp/Robyn_3.12.1.tar.gz -C /tmp/robyn-src
+          test -f /tmp/robyn-src/Robyn/R/R/transformation.R
+          patch --directory=/tmp/robyn-src/Robyn -p1 --input=robyn_experiment/patch/frequency_trap_arm_B.patch
+          R CMD INSTALL --no-multiarch --with-keep.source --library=rlibB /tmp/robyn-src/Robyn
+          Rscript -e ' .libPaths(c(normalizePath("rlibB"), .libPaths())); stopifnot(as.character(packageVersion("Robyn")) == "3.12.1"); stopifnot(exists("run_transformations_daily_then_weekly", envir=asNamespace("Robyn"))); cat("Robyn", as.character(packageVersion("Robyn")), "patched OK\\n") '
+
+      - name: Verify Python and R can see Nevergrad
+        working-directory: sims
+        env:
+          RETICULATE_PYTHON: ${{ runner.temp }}/python/bin/python
+        run: |
+          python -c "import nevergrad, numpy; print('Nevergrad', nevergrad.__version__, 'NumPy', numpy.__version__)"
+          Rscript -e 'reticulate::use_python(Sys.getenv("RETICULATE_PYTHON"), required=TRUE); stopifnot(reticulate::py_module_available("nevergrad")); print(reticulate::py_config())'
+
+      - name: Run one independent-seed experiment cell
+        working-directory: sims
+        env:
+          ROBYN_LIB_DIRS: ${{ github.workspace }}/rlibB
+          R_LIBS: ${{ github.workspace }}/rlibB
+          RETICULATE_PYTHON: ${{ runner.temp }}/python/bin/python
+          STAB_PARETO_DIR: results/seed2/stab_pareto
+          STAB_MANIFEST_FILE: results/seed2/stab_manifest_seed2.csv
+        run: |
+          mkdir -p results/seed2/stab_pareto
+          Rscript run_robyn_stab.R ${{ matrix.market }} ${{ matrix.arm }} ${{ matrix.iterations }} 5 ${{ matrix.tag }} results/seed2/RXM_stability_seed2.csv 2 ${{ inputs.seed }}
+          test -s results/seed2/RXM_stability_seed2.csv
+          test -s results/seed2/stab_manifest_seed2.csv
+          test -s results/seed2/stab_pareto/m$(printf '%02d' ${{ matrix.market }})_${{ matrix.arm }}_${{ matrix.tag }}_models.csv
+          test -s results/seed2/stab_pareto/m$(printf '%02d' ${{ matrix.market }})_${{ matrix.arm }}_${{ matrix.tag }}_convergence.csv
+          test -s results/seed2/stab_pareto/m$(printf '%02d' ${{ matrix.market }})_${{ matrix.arm }}_${{ matrix.tag }}_session.txt
+
+      - name: Upload this cell's complete outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: robyn-seed2-m${{ matrix.market }}-${{ matrix.arm }}-${{ matrix.tag }}
+          path: sims/results/seed2/
+          if-no-files-found: warn
+          retention-days: 30
+
+  collect:
+    name: Collect and validate the 24 experiment cells
+    if: always()
+    needs: robyn
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: robyn-seed2-*
+          path: seed2-artifacts
+          merge-multiple: false
+      - name: Consolidate CSVs and check coverage
+        run: |
+          python - <<'PY'
+          import csv, glob, os
+          from pathlib import Path
+          root = Path("seed2-artifacts")
+          summaries = list(root.glob("*/RXM_stability_seed2.csv"))
+          manifests = list(root.glob("*/stab_manifest_seed2.csv"))
+          out = Path("combined-seed2")
+          (out / "stab_pareto").mkdir(parents=True, exist_ok=True)
+          def combine(files, target):
+              rows, header = [], None
+              for f in files:
+                  with f.open(newline="", encoding="utf-8-sig") as h:
+                      reader = csv.DictReader(h)
+                      if header is None: header = reader.fieldnames
+                      elif reader.fieldnames != header: raise SystemExit(f"Schema mismatch in {f}")
+                      rows.extend(reader)
+              if header:
+                  with target.open("w", newline="", encoding="utf-8") as h:
+                      w = csv.DictWriter(h, fieldnames=header); w.writeheader(); w.writerows(rows)
+              return len(rows)
+          n_summary = combine(summaries, out / "RXM_stability_seed2.csv")
+          n_manifest = combine(manifests, out / "stab_manifest_seed2.csv")
+          for f in root.glob("*/stab_pareto/*"):
+              dest = out / "stab_pareto" / f.name
+              if dest.exists(): raise SystemExit(f"Duplicate output filename: {dest}")
+              dest.write_bytes(f.read_bytes())
+          model_files = list((out / "stab_pareto").glob("*_models.csv"))
+          conv_files = list((out / "stab_pareto").glob("*_convergence.csv"))
+          session_files = list((out / "stab_pareto").glob("*_session.txt"))
+          print(f"Summary rows={n_summary}; manifest rows={n_manifest}; model={len(model_files)}; convergence={len(conv_files)}; sessions={len(session_files)}")
+          if n_summary != 48 or n_manifest != 24 or len(model_files) != 24 or len(conv_files) != 24 or len(session_files) != 24:
+              raise SystemExit("INCOMPLETE: expected 48 summary rows, 24 manifests and 24 each of model/convergence/session files.")
+          PY
+      - name: Upload consolidated seed-2 dataset
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: robyn-stability-seed2-complete
+          path: combined-seed2/
+          if-no-files-found: warn
+          retention-days: 90

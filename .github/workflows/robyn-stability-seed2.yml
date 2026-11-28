@@ -26,7 +26,7 @@ jobs:
     timeout-minutes: 360
     strategy:
       fail-fast: false
-      max-parallel: ${{ fromJSON(inputs.max_parallel) }}
+      max-parallel: ${{ fromJSON(inputs.max_parallel || '8') }}
       matrix:
         include:
           - { market: 0, arm: A, iterations: 2000, tag: seed2_rep2000, seed: 2 }

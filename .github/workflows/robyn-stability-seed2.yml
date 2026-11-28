@@ -120,7 +120,7 @@ jobs:
           tar -xzf /tmp/Robyn_3.12.1.tar.gz -C /tmp/robyn-src
           # CRAN layout: Robyn/R/transformation.R. The patch uses the GitHub layout (a/R/R/transformation.R) -> strip 2 levels.
           test -f /tmp/robyn-src/Robyn/R/transformation.R
-          patch --directory=/tmp/robyn-src/Robyn -p2 --input=robyn_experiment/patch/frequency_trap_arm_B.patch
+          patch --directory=/tmp/robyn-src/Robyn -p2 --input="$GITHUB_WORKSPACE/robyn_experiment/patch/frequency_trap_arm_B.patch"
           # The patched file must be byte-identical to the one used on the laptop.
           cmp /tmp/robyn-src/Robyn/R/transformation.R robyn_experiment/patch/transformation_patched_full.R \
             || { diff /tmp/robyn-src/Robyn/R/transformation.R robyn_experiment/patch/transformation_patched_full.R | head -60; exit 1; }

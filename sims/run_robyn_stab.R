@@ -28,17 +28,18 @@ hyper <- list(ch1_alphas = c(0.5, 3), ch1_gammas = c(0.05, 1), ch1_thetas = c(0.
               ch3_alphas = c(0.5, 3), ch3_gammas = c(0.05, 1), ch3_thetas = c(0.01, 0.95), train_size = c(0.5, 0.9))
 hyper_txt <- "alphas 0.5-3; gammas 0.05-1; thetas 0.01-0.95 (all 3 channels); train_size 0.5-0.9"
 pv <- c("trend", "season")
-t0 <- Sys.time()
+t0 <- proc.time()[["elapsed"]]
 IC <- suppressWarnings(robyn_inputs(dt_input = df, dt_holidays = dt_prophet_holidays, date_var = "DATE", dep_var = "revenue", dep_var_type = "revenue",
         prophet_vars = pv, prophet_country = "GB", paid_media_spends = c("ch1", "ch2", "ch3"), paid_media_vars = c("ch1", "ch2", "ch3"),
         window_start = min(df$DATE), window_end = max(df$DATE), adstock = "geometric", hyperparameters = hyper))
 OM <- suppressWarnings(robyn_run(InputCollect = IC, iterations = iters, trials = trials, ts_validation = TRUE, cores = cores, seed = seed, outputs = FALSE))
 OC <- suppressWarnings(robyn_outputs(IC, OM, pareto_fronts = "auto", clusters = FALSE, csv_out = NULL, plot_pareto = FALSE, plot_folder = tempdir(), export = FALSE, quiet = TRUE))
-secs <- round(as.numeric(difftime(Sys.time(), t0, units = "secs")))
-outdir <- file.path(dirname(outfile), "stab_pareto")
+secs <- round(proc.time()[["elapsed"]] - t0)
+outdir <- Sys.getenv("STAB_PARETO_DIR", unset = file.path(dirname(outfile), "stab_pareto"))
+manifest_file <- Sys.getenv("STAB_MANIFEST_FILE", unset = file.path(dirname(outfile), "stab_manifest.csv"))
 out <- extract_stab(OC, OM, mk, arm, iters, trials, seed, cores, secs, tag, outdir)
 out$timestamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
-write_manifest(file.path(dirname(outfile), "stab_manifest.csv"), mk, arm, tag, iters, trials, seed, cores, hyper_txt, if (arm == "B") dailyf else NA_character_)
+write_manifest(manifest_file, mk, arm, tag, iters, trials, seed, cores, hyper_txt, if (arm == "B") dailyf else NA_character_)
 writeLines(capture.output(sessionInfo()), file.path(outdir, sprintf("m%02d_%s_%s_session.txt", mk, arm, tag)))
 first <- !file.exists(outfile)
 write.table(out, outfile, sep = ",", row.names = FALSE, col.names = first, append = !first, qmethod = "double")

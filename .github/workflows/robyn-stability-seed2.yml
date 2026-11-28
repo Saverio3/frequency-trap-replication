@@ -1,4 +1,4 @@
-name: Robyn stability — independent seed 2
+name: Robyn stability — independent seeds 2 and 3
 
 on:
   workflow_dispatch:
@@ -6,21 +6,16 @@ on:
       max_parallel:
         description: "Number of simultaneous market/arm/budget jobs (GitHub-hosted runners)"
         required: true
-        default: "6"
+        default: "8"
         type: choice
         options: ["2", "4", "6", "8"]
       seed:
-        description: "Independent optimiser seed (keep 2 for this pre-planned extension)"
-        required: true
-        default: "2"
-        type: choice
-        options: ["2"]
-
+        
 permissions:
   contents: read
 
 concurrency:
-  group: robyn-stability-seed2-${{ github.ref }}
+  group: robyn-stability-seeds23-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -33,30 +28,54 @@ jobs:
       max-parallel: ${{ fromJSON(inputs.max_parallel) }}
       matrix:
         include:
-          - { market: 0, arm: A, iterations: 2000, tag: seed2_rep2000 }
-          - { market: 0, arm: A, iterations: 4000, tag: seed2_inc4000 }
-          - { market: 0, arm: B, iterations: 2000, tag: seed2_rep2000 }
-          - { market: 0, arm: B, iterations: 4000, tag: seed2_inc4000 }
-          - { market: 2, arm: A, iterations: 2000, tag: seed2_rep2000 }
-          - { market: 2, arm: A, iterations: 4000, tag: seed2_inc4000 }
-          - { market: 2, arm: B, iterations: 2000, tag: seed2_rep2000 }
-          - { market: 2, arm: B, iterations: 4000, tag: seed2_inc4000 }
-          - { market: 4, arm: A, iterations: 2000, tag: seed2_rep2000 }
-          - { market: 4, arm: A, iterations: 4000, tag: seed2_inc4000 }
-          - { market: 4, arm: B, iterations: 2000, tag: seed2_rep2000 }
-          - { market: 4, arm: B, iterations: 4000, tag: seed2_inc4000 }
-          - { market: 7, arm: A, iterations: 2000, tag: seed2_rep2000 }
-          - { market: 7, arm: A, iterations: 4000, tag: seed2_inc4000 }
-          - { market: 7, arm: B, iterations: 2000, tag: seed2_rep2000 }
-          - { market: 7, arm: B, iterations: 4000, tag: seed2_inc4000 }
-          - { market: 11, arm: A, iterations: 2000, tag: seed2_rep2000 }
-          - { market: 11, arm: A, iterations: 4000, tag: seed2_inc4000 }
-          - { market: 11, arm: B, iterations: 2000, tag: seed2_rep2000 }
-          - { market: 11, arm: B, iterations: 4000, tag: seed2_inc4000 }
-          - { market: 13, arm: A, iterations: 2000, tag: seed2_rep2000 }
-          - { market: 13, arm: A, iterations: 4000, tag: seed2_inc4000 }
-          - { market: 13, arm: B, iterations: 2000, tag: seed2_rep2000 }
-          - { market: 13, arm: B, iterations: 4000, tag: seed2_inc4000 }
+          - { market: 0, arm: A, iterations: 2000, tag: seed2_rep2000, seed: 2 }
+          - { market: 0, arm: A, iterations: 4000, tag: seed2_inc4000, seed: 2 }
+          - { market: 0, arm: B, iterations: 2000, tag: seed2_rep2000, seed: 2 }
+          - { market: 0, arm: B, iterations: 4000, tag: seed2_inc4000, seed: 2 }
+          - { market: 2, arm: A, iterations: 2000, tag: seed2_rep2000, seed: 2 }
+          - { market: 2, arm: A, iterations: 4000, tag: seed2_inc4000, seed: 2 }
+          - { market: 2, arm: B, iterations: 2000, tag: seed2_rep2000, seed: 2 }
+          - { market: 2, arm: B, iterations: 4000, tag: seed2_inc4000, seed: 2 }
+          - { market: 4, arm: A, iterations: 2000, tag: seed2_rep2000, seed: 2 }
+          - { market: 4, arm: A, iterations: 4000, tag: seed2_inc4000, seed: 2 }
+          - { market: 4, arm: B, iterations: 2000, tag: seed2_rep2000, seed: 2 }
+          - { market: 4, arm: B, iterations: 4000, tag: seed2_inc4000, seed: 2 }
+          - { market: 7, arm: A, iterations: 2000, tag: seed2_rep2000, seed: 2 }
+          - { market: 7, arm: A, iterations: 4000, tag: seed2_inc4000, seed: 2 }
+          - { market: 7, arm: B, iterations: 2000, tag: seed2_rep2000, seed: 2 }
+          - { market: 7, arm: B, iterations: 4000, tag: seed2_inc4000, seed: 2 }
+          - { market: 11, arm: A, iterations: 2000, tag: seed2_rep2000, seed: 2 }
+          - { market: 11, arm: A, iterations: 4000, tag: seed2_inc4000, seed: 2 }
+          - { market: 11, arm: B, iterations: 2000, tag: seed2_rep2000, seed: 2 }
+          - { market: 11, arm: B, iterations: 4000, tag: seed2_inc4000, seed: 2 }
+          - { market: 13, arm: A, iterations: 2000, tag: seed2_rep2000, seed: 2 }
+          - { market: 13, arm: A, iterations: 4000, tag: seed2_inc4000, seed: 2 }
+          - { market: 13, arm: B, iterations: 2000, tag: seed2_rep2000, seed: 2 }
+          - { market: 13, arm: B, iterations: 4000, tag: seed2_inc4000, seed: 2 }
+          - { market: 0, arm: A, iterations: 2000, tag: seed3_rep2000, seed: 3 }
+          - { market: 0, arm: A, iterations: 4000, tag: seed3_inc4000, seed: 3 }
+          - { market: 0, arm: B, iterations: 2000, tag: seed3_rep2000, seed: 3 }
+          - { market: 0, arm: B, iterations: 4000, tag: seed3_inc4000, seed: 3 }
+          - { market: 2, arm: A, iterations: 2000, tag: seed3_rep2000, seed: 3 }
+          - { market: 2, arm: A, iterations: 4000, tag: seed3_inc4000, seed: 3 }
+          - { market: 2, arm: B, iterations: 2000, tag: seed3_rep2000, seed: 3 }
+          - { market: 2, arm: B, iterations: 4000, tag: seed3_inc4000, seed: 3 }
+          - { market: 4, arm: A, iterations: 2000, tag: seed3_rep2000, seed: 3 }
+          - { market: 4, arm: A, iterations: 4000, tag: seed3_inc4000, seed: 3 }
+          - { market: 4, arm: B, iterations: 2000, tag: seed3_rep2000, seed: 3 }
+          - { market: 4, arm: B, iterations: 4000, tag: seed3_inc4000, seed: 3 }
+          - { market: 7, arm: A, iterations: 2000, tag: seed3_rep2000, seed: 3 }
+          - { market: 7, arm: A, iterations: 4000, tag: seed3_inc4000, seed: 3 }
+          - { market: 7, arm: B, iterations: 2000, tag: seed3_rep2000, seed: 3 }
+          - { market: 7, arm: B, iterations: 4000, tag: seed3_inc4000, seed: 3 }
+          - { market: 11, arm: A, iterations: 2000, tag: seed3_rep2000, seed: 3 }
+          - { market: 11, arm: A, iterations: 4000, tag: seed3_inc4000, seed: 3 }
+          - { market: 11, arm: B, iterations: 2000, tag: seed3_rep2000, seed: 3 }
+          - { market: 11, arm: B, iterations: 4000, tag: seed3_inc4000, seed: 3 }
+          - { market: 13, arm: A, iterations: 2000, tag: seed3_rep2000, seed: 3 }
+          - { market: 13, arm: A, iterations: 4000, tag: seed3_inc4000, seed: 3 }
+          - { market: 13, arm: B, iterations: 2000, tag: seed3_rep2000, seed: 3 }
+          - { market: 13, arm: B, iterations: 4000, tag: seed3_inc4000, seed: 3 }
 
     steps:
       - uses: actions/checkout@v4
@@ -119,7 +138,7 @@ jobs:
           STAB_MANIFEST_FILE: results/seed2/stab_manifest_seed2.csv
         run: |
           mkdir -p results/seed2/stab_pareto
-          Rscript run_robyn_stab.R ${{ matrix.market }} ${{ matrix.arm }} ${{ matrix.iterations }} 5 ${{ matrix.tag }} results/seed2/RXM_stability_seed2.csv 2 ${{ inputs.seed }}
+          Rscript run_robyn_stab.R ${{ matrix.market }} ${{ matrix.arm }} ${{ matrix.iterations }} 5 ${{ matrix.tag }} results/seed2/RXM_stability_seed2.csv 2 ${{ matrix.seed }}
           test -s results/seed2/RXM_stability_seed2.csv
           test -s results/seed2/stab_manifest_seed2.csv
           test -s results/seed2/stab_pareto/m$(printf '%02d' ${{ matrix.market }})_${{ matrix.arm }}_${{ matrix.tag }}_models.csv
@@ -130,7 +149,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: robyn-seed2-m${{ matrix.market }}-${{ matrix.arm }}-${{ matrix.tag }}
+          name: robyn-seed${{ matrix.seed }}-m${{ matrix.market }}-${{ matrix.arm }}-${{ matrix.tag }}
           path: sims/results/seed2/
           if-no-files-found: warn
           retention-days: 30
@@ -144,7 +163,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
-          pattern: robyn-seed2-*
+          pattern: robyn-seed[23]-*
           path: seed2-artifacts
           merge-multiple: false
       - name: Consolidate CSVs and check coverage
@@ -179,8 +198,8 @@ jobs:
           conv_files = list((out / "stab_pareto").glob("*_convergence.csv"))
           session_files = list((out / "stab_pareto").glob("*_session.txt"))
           print(f"Summary rows={n_summary}; manifest rows={n_manifest}; model={len(model_files)}; convergence={len(conv_files)}; sessions={len(session_files)}")
-          if n_summary != 48 or n_manifest != 24 or len(model_files) != 24 or len(conv_files) != 24 or len(session_files) != 24:
-              raise SystemExit("INCOMPLETE: expected 48 summary rows, 24 manifests and 24 each of model/convergence/session files.")
+          if n_summary != 96 or n_manifest != 48 or len(model_files) != 48 or len(conv_files) != 48 or len(session_files) != 48:
+              raise SystemExit("INCOMPLETE: expected 96 summary rows, 48 manifests and 48 each of model/convergence/session files.")
           PY
       - name: Upload consolidated seed-2 dataset
         if: always()

@@ -104,7 +104,7 @@ jobs:
       - name: Verify Python and R can see Nevergrad
         working-directory: sims
         env:
-          RETICULATE_PYTHON: ${{ runner.temp }}/python/bin/python
+          RETICULATE_PYTHON: ${{ env.pythonLocation }}/bin/python
         run: |
           python -c "import nevergrad, numpy; print('Nevergrad', nevergrad.__version__, 'NumPy', numpy.__version__)"
           Rscript -e 'reticulate::use_python(Sys.getenv("RETICULATE_PYTHON"), required=TRUE); stopifnot(reticulate::py_module_available("nevergrad")); print(reticulate::py_config())'
@@ -114,7 +114,7 @@ jobs:
         env:
           ROBYN_LIB_DIRS: ${{ github.workspace }}/rlibB
           R_LIBS: ${{ github.workspace }}/rlibB
-          RETICULATE_PYTHON: ${{ runner.temp }}/python/bin/python
+          RETICULATE_PYTHON: ${{ env.pythonLocation }}/bin/python
           STAB_PARETO_DIR: results/seed2/stab_pareto
           STAB_MANIFEST_FILE: results/seed2/stab_manifest_seed2.csv
         run: |

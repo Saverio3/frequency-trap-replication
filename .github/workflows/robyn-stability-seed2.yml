@@ -133,22 +133,22 @@ jobs:
           R_LIBS: ${{ github.workspace }}/rlibB
           RETICULATE_PYTHON: ${{ env.pythonLocation }}/bin/python
           STAB_PARETO_DIR: results/newseeds/stab_pareto
-          STAB_MANIFEST_FILE: results/seed2/stab_manifest_newseeds.csv
+          STAB_MANIFEST_FILE: results/newseeds/stab_manifest_newseeds.csv
         run: |
-          mkdir -p results/seed2/stab_pareto
-          Rscript run_robyn_stab.R ${{ matrix.market }} ${{ matrix.arm }} ${{ matrix.iterations }} 5 ${{ matrix.tag }} results/seed2/RXM_stability_newseeds.csv 2 ${{ matrix.seed }}
-          test -s results/seed2/RXM_stability_seed2.csv
-          test -s results/seed2/stab_manifest_seed2.csv
-          test -s results/seed2/stab_pareto/m$(printf '%02d' ${{ matrix.market }})_${{ matrix.arm }}_${{ matrix.tag }}_models.csv
-          test -s results/seed2/stab_pareto/m$(printf '%02d' ${{ matrix.market }})_${{ matrix.arm }}_${{ matrix.tag }}_convergence.csv
-          test -s results/seed2/stab_pareto/m$(printf '%02d' ${{ matrix.market }})_${{ matrix.arm }}_${{ matrix.tag }}_session.txt
+          mkdir -p results/newseeds/stab_pareto
+          Rscript run_robyn_stab.R ${{ matrix.market }} ${{ matrix.arm }} ${{ matrix.iterations }} 5 ${{ matrix.tag }} results/newseeds/RXM_stability_newseeds.csv 2 ${{ matrix.seed }}
+          test -s results/newseeds/RXM_stability_newseeds.csv
+          test -s results/newseeds/stab_manifest_newseeds.csv
+          test -s results/newseeds/stab_pareto/m$(printf '%02d' ${{ matrix.market }})_${{ matrix.arm }}_${{ matrix.tag }}_models.csv
+          test -s results/newseeds/stab_pareto/m$(printf '%02d' ${{ matrix.market }})_${{ matrix.arm }}_${{ matrix.tag }}_convergence.csv
+          test -s results/newseeds/stab_pareto/m$(printf '%02d' ${{ matrix.market }})_${{ matrix.arm }}_${{ matrix.tag }}_session.txt
 
       - name: Upload this cell's complete outputs
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: robyn-seed${{ matrix.seed }}-m${{ matrix.market }}-${{ matrix.arm }}-${{ matrix.tag }}
-          path: sims/results/seed2/
+          path: sims/results/newseeds/
           if-no-files-found: warn
           retention-days: 30
 
@@ -162,16 +162,16 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           pattern: robyn-seed[23]-*
-          path: seed2-artifacts
+          path: newseed-artifacts
           merge-multiple: false
       - name: Consolidate CSVs and check coverage
         run: |
           python - <<'PY'
           import csv, glob, os
           from pathlib import Path
-          root = Path("seed2-artifacts")
-          summaries = list(root.glob("*/RXM_stability_seed2.csv"))
-          manifests = list(root.glob("*/stab_manifest_seed2.csv"))
+          root = Path("newseed-artifacts")
+          summaries = list(root.glob("*/RXM_stability_newseeds.csv"))
+          manifests = list(root.glob("*/stab_manifest_newseeds.csv"))
           out = Path("combined-newseeds")
           (out / "stab_pareto").mkdir(parents=True, exist_ok=True)
           def combine(files, target):
@@ -186,8 +186,8 @@ jobs:
                   with target.open("w", newline="", encoding="utf-8") as h:
                       w = csv.DictWriter(h, fieldnames=header); w.writeheader(); w.writerows(rows)
               return len(rows)
-          n_summary = combine(summaries, out / "RXM_stability_seed2.csv")
-          n_manifest = combine(manifests, out / "stab_manifest_seed2.csv")
+          n_summary = combine(summaries, out / "RXM_stability_newseeds.csv")
+          n_manifest = combine(manifests, out / "stab_manifest_newseeds.csv")
           for f in root.glob("*/stab_pareto/*"):
               dest = out / "stab_pareto" / f.name
               if dest.exists(): raise SystemExit(f"Duplicate output filename: {dest}")
@@ -203,7 +203,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: robyn-stability-seed2-complete
-          path: combined-seed2/
+          name: robyn-stability-seeds23-complete
+          path: combined-newseeds/
           if-no-files-found: warn
           retention-days: 90

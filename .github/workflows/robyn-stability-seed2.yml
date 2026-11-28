@@ -9,9 +9,9 @@ on:
       max_parallel:
         description: "Number of simultaneous market/arm/budget jobs (GitHub-hosted runners)"
         required: true
-        default: "8"
+        default: "20"
         type: choice
-        options: ["2", "4", "6", "8"]
+        options: ["4", "8", "12", "20"]
 permissions:
   contents: read
 
@@ -26,7 +26,7 @@ jobs:
     timeout-minutes: 360
     strategy:
       fail-fast: false
-      max-parallel: ${{ fromJSON(inputs.max_parallel || '8') }}
+      max-parallel: ${{ fromJSON(inputs.max_parallel || '20') }}
       matrix:
         include:
           - { market: 0, arm: A, iterations: 2000, tag: seed2_rep2000, seed: 2 }
@@ -77,6 +77,8 @@ jobs:
           - { market: 13, arm: A, iterations: 4000, tag: seed3_inc4000, seed: 3 }
           - { market: 13, arm: B, iterations: 2000, tag: seed3_rep2000, seed: 3 }
           - { market: 13, arm: B, iterations: 4000, tag: seed3_inc4000, seed: 3 }
+          # Platform check: re-run one laptop cell (seed 1) to see whether GitHub reproduces the laptop number
+          - { market: 0, arm: A, iterations: 2000, tag: seed1_platformcheck, seed: 1 }
 
     steps:
       - uses: actions/checkout@v4
@@ -88,13 +90,13 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           cache: pip
 
       - name: Install Python optimiser
         run: |
           python -m pip install --upgrade pip
-          python -m pip install "numpy==2.3.5" "nevergrad==1.0.12"
+          python -m pip install "numpy==2.5.2" "nevergrad==1.0.12"
           echo "RETICULATE_PYTHON=$(python -c 'import sys; print(sys.executable)')" >> "$GITHUB_ENV"
 
       - name: Install R dependencies
@@ -112,13 +114,16 @@ jobs:
       - name: Build and install Robyn 3.12.1 with the study's Arm B patch
         run: |
           set -euxo pipefail
-          curl --fail --location --retry 4 \
-            https://cran.r-project.org/src/contrib/Robyn_3.12.1.tar.gz \
-            --output /tmp/Robyn_3.12.1.tar.gz
+          curl --fail --location --retry 4 https://cran.r-project.org/src/contrib/Robyn_3.12.1.tar.gz --output /tmp/Robyn_3.12.1.tar.gz \
+            || curl --fail --location --retry 4 https://cran.r-project.org/src/contrib/Archive/Robyn/Robyn_3.12.1.tar.gz --output /tmp/Robyn_3.12.1.tar.gz
           mkdir -p /tmp/robyn-src rlibB
           tar -xzf /tmp/Robyn_3.12.1.tar.gz -C /tmp/robyn-src
-          test -f /tmp/robyn-src/Robyn/R/R/transformation.R
-          patch --directory=/tmp/robyn-src/Robyn -p1 --input=robyn_experiment/patch/frequency_trap_arm_B.patch
+          # CRAN layout: Robyn/R/transformation.R. The patch uses the GitHub layout (a/R/R/transformation.R) -> strip 2 levels.
+          test -f /tmp/robyn-src/Robyn/R/transformation.R
+          patch --directory=/tmp/robyn-src/Robyn -p2 --input=robyn_experiment/patch/frequency_trap_arm_B.patch
+          # The patched file must be byte-identical to the one used on the laptop.
+          cmp /tmp/robyn-src/Robyn/R/transformation.R robyn_experiment/patch/transformation_patched_full.R \
+            || { diff /tmp/robyn-src/Robyn/R/transformation.R robyn_experiment/patch/transformation_patched_full.R | head -60; exit 1; }
           R CMD INSTALL --no-multiarch --with-keep.source --library=rlibB /tmp/robyn-src/Robyn
           Rscript -e ' .libPaths(c(normalizePath("rlibB"), .libPaths())); stopifnot(as.character(packageVersion("Robyn")) == "3.12.1"); stopifnot(exists("run_transformations_daily_then_weekly", envir=asNamespace("Robyn"))); cat("Robyn", as.character(packageVersion("Robyn")), "patched OK\\n") '
 
@@ -135,16 +140,23 @@ jobs:
           R_LIBS: ${{ github.workspace }}/rlibB
           STAB_PARETO_DIR: results/newseeds/stab_pareto
           STAB_MANIFEST_FILE: results/newseeds/stab_manifest_newseeds.csv
+          ROBYN_FORCE_DETECTCORES: "15"
         run: |
           set -euo pipefail
           mkdir -p results/newseeds/stab_pareto
           echo "Smoke test: market ${{ matrix.market }}, arm ${{ matrix.arm }}, 300 iterations x 1 trial"
           STAB_PARETO_DIR=results/newseeds/smoke_pareto STAB_MANIFEST_FILE=results/newseeds/smoke_manifest.csv \
-            Rscript run_robyn_stab.R ${{ matrix.market }} ${{ matrix.arm }} 300 1 smoke_seed${{ matrix.seed }} results/newseeds/smoke.csv 3 ${{ matrix.seed }}
+            Rscript run_robyn_stab.R ${{ matrix.market }} ${{ matrix.arm }} 300 1 smoke_seed${{ matrix.seed }} results/newseeds/smoke.csv 15 ${{ matrix.seed }}
           test -s results/newseeds/smoke.csv
+          python - <<'PY'
+          import csv
+          r = list(csv.DictReader(open("results/newseeds/smoke.csv")))
+          assert r and all(x["cores"] == "15" for x in r), "smoke run did not use 15 Robyn workers"
+          print("smoke OK, cores =", r[0]["cores"])
+          PY
           rm -rf results/newseeds/smoke_pareto results/newseeds/smoke_manifest.csv results/newseeds/smoke.csv
           echo "Full run: ${{ matrix.iterations }} iterations x 5 trials, seed ${{ matrix.seed }}"
-          Rscript run_robyn_stab.R ${{ matrix.market }} ${{ matrix.arm }} ${{ matrix.iterations }} 5 ${{ matrix.tag }} results/newseeds/RXM_stability_newseeds.csv 3 ${{ matrix.seed }}
+          Rscript run_robyn_stab.R ${{ matrix.market }} ${{ matrix.arm }} ${{ matrix.iterations }} 5 ${{ matrix.tag }} results/newseeds/RXM_stability_newseeds.csv 15 ${{ matrix.seed }}
           test -s results/newseeds/RXM_stability_newseeds.csv
           test -s results/newseeds/stab_manifest_newseeds.csv
           test -s results/newseeds/stab_pareto/m$(printf '%02d' ${{ matrix.market }})_${{ matrix.arm }}_${{ matrix.tag }}_models.csv
@@ -155,7 +167,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: robyn-seed${{ matrix.seed }}-m${{ matrix.market }}-${{ matrix.arm }}-${{ matrix.tag }}
+          name: ${{ matrix.tag == 'seed1_platformcheck' && 'platformcheck' || format('robyn-seed{0}-m{1}-{2}-{3}', matrix.seed, matrix.market, matrix.arm, matrix.tag) }}
           path: sims/results/newseeds/
           if-no-files-found: warn
           retention-days: 30
@@ -165,6 +177,8 @@ jobs:
     if: always()
     needs: robyn
     runs-on: ubuntu-22.04
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -219,6 +233,37 @@ jobs:
             combined-newseeds/RXM_stability_newseeds.csv \
             sims/robyn_mc/truth_mc.csv \
             combined-newseeds
+      - uses: actions/download-artifact@v4
+        if: always()
+        continue-on-error: true
+        with:
+          name: platformcheck
+          path: platform-check
+      - name: Platform check (GitHub vs laptop, market 0 / A / 2000 / seed 1)
+        if: always()
+        continue-on-error: true
+        run: |
+          mkdir -p combined-newseeds
+          python - <<'PY' | tee combined-newseeds/platform_check.txt
+          import pandas as pd
+          lap = pd.read_csv("robyn_experiment/RXM_stability.csv")
+          lap = lap[(lap.market == 0) & (lap.arm == "A") & (lap.tag == "rep2000")].set_index("rule")
+          gh = pd.read_csv("platform-check/RXM_stability_newseeds.csv").set_index("rule")
+          for r in ["errscore", "nrmse"]:
+              a, b = lap.est_total[r], gh.est_total[r]
+              print(f"{r}: laptop {a:.4f}  github {b:.4f}  diff {100*(b-a)/a:+.4f}%  identical={abs(b-a) < 1e-6*abs(a)}")
+          PY
+      - name: Commit results into the repo (robyn_experiment/stability_seeds23/)
+        if: always()
+        run: |
+          test -d combined-newseeds || exit 0
+          mkdir -p robyn_experiment/stability_seeds23
+          cp -r combined-newseeds/. robyn_experiment/stability_seeds23/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add robyn_experiment/stability_seeds23
+          git commit -m "Robyn stability seeds 2 and 3: results from run ${{ github.run_id }}" || exit 0
+          git push origin HEAD:${{ github.ref_name }}
       - name: Upload consolidated seed-2/3 dataset
         if: always()
         uses: actions/upload-artifact@v4

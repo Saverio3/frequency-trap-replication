@@ -7,6 +7,11 @@ stopifnot(arm %in% c("A", "B"))
 LIBS <- Sys.getenv("ROBYN_LIB_DIRS", "")
 if (nzchar(LIBS)) .libPaths(c(strsplit(LIBS, .Platform$path.sep)[[1]], .libPaths()))
 suppressMessages({library(Robyn); library(dplyr)})
+# Robyn passes `cores` to Nevergrad as num_workers (batch size), so the core count changes the search path.
+# Robyn also caps cores at parallel::detectCores(). To reproduce the laptop's 15-worker search on a smaller
+# machine (GitHub runner), set ROBYN_FORCE_DETECTCORES=15: workers are then oversubscribed (slower, same search).
+FDC <- Sys.getenv("ROBYN_FORCE_DETECTCORES", "")
+if (nzchar(FDC)) { n_fdc <- as.integer(FDC); utils::assignInNamespace("detectCores", function(...) n_fdc, ns = "parallel"); message("detectCores forced to ", n_fdc) }
 RP <- Sys.getenv("RETICULATE_PYTHON", ""); if (nzchar(RP) && file.exists(RP)) Sys.setenv(RETICULATE_PYTHON = RP)
 source("stab_extract.R")
 Sys.unsetenv("ROBYN_DAILY_SPEND_FILE")
@@ -37,6 +42,7 @@ OC <- suppressWarnings(robyn_outputs(IC, OM, pareto_fronts = "auto", clusters = 
 secs <- round(proc.time()[["elapsed"]] - t0)
 outdir <- Sys.getenv("STAB_PARETO_DIR", unset = file.path(dirname(outfile), "stab_pareto"))
 manifest_file <- Sys.getenv("STAB_MANIFEST_FILE", unset = file.path(dirname(outfile), "stab_manifest.csv"))
+if (!is.null(OM$cores)) cores <- OM$cores             # record the core count Robyn actually used (it caps at detectCores)
 out <- extract_stab(OC, OM, mk, arm, iters, trials, seed, cores, secs, tag, outdir)
 out$timestamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
 write_manifest(manifest_file, mk, arm, tag, iters, trials, seed, cores, hyper_txt, if (arm == "B") dailyf else NA_character_)
